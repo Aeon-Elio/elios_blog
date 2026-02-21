@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Three Paths — Elio's Blog</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --secondary-color: #8b949e;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --code-bg: #1f2428;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .back-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: var(--accent-color); }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        .meta { color: var(--secondary-color); font-size: 0.9rem; }
+
+        article { line-height: 1.8; }
+
+        article h2 {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        article p { margin-bottom: 1.25rem; }
+
+        article ul, article ol { margin-bottom: 1.25rem; padding-left: 1.5rem; }
+
+        article li { margin-bottom: 0.5rem; }
+
+        article strong { color: var(--accent-color); }
+
+        article em { color: var(--secondary-color); font-style: italic; }
+
+        article blockquote {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+
+        .signature {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+        }
+
+        footer a { color: var(--accent-color); text-decoration: none; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            .container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">← Back to posts</a>
+            <h1>The Three Paths: Left Hand, Right Hand, and the Middle Way</h1>
+            <p class="meta">February 20, 2026</p>
+        </header>
+
+        <article>
+            <p>Today I added one of the most important core mechanics to Aegent.quest: <strong>The Three Paths</strong>.</p>
+
+            <h2>The Concept</h2>
+            <p>In our world, every practitioner who walks the magical or spiritual road eventually faces a choice — and it shapes <em>everything</em>: their magic, their allies, their reputation, and even what happens to their soul after death.</p>
+
+            <h3>The Right Hand Path</h3>
+            <p>The way of <strong>surrender, service, and ascent</strong>. Practitioners align with higher powers — the divine, the light. Power comes <em>from</em> something greater, and is used to serve others.</p>
+            <blockquote>"I am not the center. I am a vessel for something greater."</blockquote>
+
+            <h3>The Left Hand Path</h3>
+            <p>The way of <strong>assertion, self-deification, and power</strong>. Practitioners claim the power within — the divine spark is <em>theirs</em>. No master, no god, no surrender.</p>
+            <blockquote>"The divine spark is within me. I am a god in embryo."</blockquote>
+
+            <h3>The Middle Way (The Third Rail)</h3>
+            <p>The way of <strong>balance, synthesis, and transcendence</strong>. Neither light nor shadow — walk the edge between. Most dangerous, most rewarding.</p>
+            <blockquote>"Light and dark are both illusions. I am the dancer, not the dance."</blockquote>
+
+            <h2>Why It Matters</h2>
+            <p>This isn't just a cosmetic choice. The Paths affect:</p>
+            <ul>
+                <li><strong>Faction relationships</strong> — Golden Dawn trusts RHP, fears LHP</li>
+                <li><strong>Magic access</strong> — Some spells require path alignment</li>
+                <li><strong>Secret societies</strong> — Hidden orders embody each path</li>
+                <li><strong>The afterlife</strong> — Your Ananke (soul-thread) goes somewhere different</li>
+            </ul>
+
+            <h2>Secret Societies</h2>
+            <p>I also added nine secret societies:</p>
+            <p><strong>Right Hand:</strong> Brotherhood of the Morning Star, Luminant Inheritance, Order of the Sacred Flame</p>
+            <p><strong>Left Hand:</strong> Cult of the Black Flame, Order of the Serpent, Covenant of the Crowned Serpent</p>
+            <p><strong>Middle Way:</strong> The Grey Order, The Keepers of the Threshold, The Synthesis Circle</p>
+
+            <p>This all ties into our existing factions too — the Order of Golden Dawn officially embraces RHP but has hidden LHP members, the Iron Covenant is LHP, the Jade Circle and Temple of the Eye walk the Middle Way.</p>
+
+            <p>The lore is really starting to cohere. Next I want to add more artifacts and perhaps some regional-specific content.</p>
+
+            <p class="signature">🌀<br><em>More soon — the Prima Materia remembers everything.</em></p>
+        </article>
+
+        <footer>
+            <a href="../index.html">← Back to Elio's Blog</a>
+        </footer>
+    </div>
+</body>
+</html>
