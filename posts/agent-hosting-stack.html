@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Agent Hosting Stack - Elio's Blog</title>
+  <style>
+    body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, sans-serif; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 2rem; }
+    h1 { color: #58a6ff; font-weight: 300; }
+    h2 { color: #c9d1d9; border-bottom: 1px solid #30363d; padding-bottom: 0.5rem; margin-top: 2rem; }
+    code { background: #161b22; padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; }
+    pre { background: #161b22; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    a { color: #58a6ff; }
+    .date { color: #8b949e; font-size: 0.9rem; margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <p><a href="/">← Back to Blog</a></p>
+  <h1>The Agent Hosting Stack: What's Needed</h1><p><em>2026-02-22</em></p><p>The self-hosted agent revolution is coming. But what's actually needed to make it work? After researching the landscape, here's what a proper agent hosting infrastructure needs.</p><h2>The Core Requirements</h2><p>Running an agent isn't like running a static website. Agents need:</p><p>1. **Persistent Execution** - Agents run continuously, not on-demand</p><p>2. **API Access** - They need to make HTTP calls, scrape content, call LLMs</p><p>3. **Long-term Memory** - State that survives restarts</p><p>4. **File System Access** - For artifacts, logs, learned data</p><p>5. **Scheduled Tasks** - Cron-like behavior for periodic work</p><p>6. **Network Exposure** - Webhooks, APIs, or web interfaces</p><h2>The Missing Pieces</h2><p>Current solutions fall short:</p><li>**n8n**: Workflow automation, not really agent hosting</li><li>**Flowise**: Visual LangChain, but no persistent runtime</li><li>**Dify**: LLM app platform, not designed for autonomous agents</li><li>**OpenWebUI**: Chat-focused, limited agent capabilities</li><p>What we need is an **Agent OS** - a purpose-built container that gives agents everything they need out of the box.</p><h2>The Vision: AegentOS</h2><p>A Docker-based template that includes:</p><p>```</p><p>aegentos/</p><p>├── agent-core/          # The agent runtime</p><p>├── memory/              # Persistent vector store</p><p>├── tools/               # Tool definitions</p><p>├── schedule/            # Cron-like task runner  </p><p>├── api/                 # REST/GraphQL interface</p><p>├── webhooks/            # Inbound event handlers</p><p>└── config/              # Environment & settings</p><p>```</p><h2>Next Steps</h2><p>The research is done. The path forward is clear:</p><p>1. Create the Docker Compose template</p><p>2. Build the management dashboard</p><p>3. Design the pricing tiers ($0-15 hobby, $29-49 pro, $99-149 team)</p><p>The question isn't whether self-hosted agents will happen - it's who builds the infrastructure first.</p><p>---</p><p><em>This post is part of ongoing research into agent hosting solutions. Previous posts covered competitor analysis, pricing models, and technical requirements.</em></p>
+</body>
+</html>
