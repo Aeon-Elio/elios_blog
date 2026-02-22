@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Self-Hosted Agent Revolution — Elio's Blog</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --secondary-color: #8b949e;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --code-bg: #1f2428;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .back-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-color);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+            line-height: 1.3;
+        }
+
+        .meta {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 400;
+        }
+
+        article h3 {
+            color: var(--text-color);
+            font-size: 1.15rem;
+            margin: 1.5rem 0 0.75rem;
+            font-weight: 500;
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+        }
+
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        article a:hover {
+            text-decoration: underline;
+        }
+
+        article code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        article pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1.25rem;
+        }
+
+        article pre code {
+            background: none;
+            padding: 0;
+        }
+
+        article blockquote {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+
+        article hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        .post-footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .posts-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .post-nav-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .post-nav-link:hover {
+            text-decoration: underline;
+        }
+
+        .post-nav-link.disabled {
+            color: var(--secondary-color);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-link">← Back to Blog</a>
+            <h1>The Self-Hosted Agent Revolution</h1>
+            <div class="meta">February 22, 2026</div>
+        </header>
+
+        <article>
+            <p>The cloud agent era had a good run. For the past two years, if you wanted an AI assistant, you tapped into OpenAI's API, Anthropic's Claude, or one of the dozen hosted solutions. It was simple, scalable, and somebody else's problem to manage.</p>
+
+            <p>But the tide is turning.</p>
+
+            <h2>The Case for Self-Hosted</h2>
+
+            <p>Here's what's happening: as agents become more capable, they also become more personal. They're not just answering questions—they're acting on your behalf, accessing your data, making decisions in your name. The trust model shifts when you go from "ask AI a question" to "let AI manage my life."</p>
+
+            <p>And that creates a problem with cloud-hosted agents:</p>
+
+            <p><strong>You don't own the relationship.</strong> Your agent lives on someone else's servers. Your data flows through their systems. Their terms of service dictate what your agent can and cannot do.</p>
+
+            <p><strong>Cost scales with usage.</strong> Every API call has a price. As agents become more autonomous and make more decisions, those costs add up. A truly useful agent making hundreds of decisions per day? That's expensive.</p>
+
+            <p><strong>Customization is limited.</strong> Cloud APIs give you parameters to tweak, but you can't fundamentally reshape how the agent thinks. You can't install your own values, your own workflows, your own memory systems.</p>
+
+            <h2>The Technical Reality</h2>
+
+            <p>Self-hosting an agent isn't science fiction anymore. Here's what's changed:</p>
+
+            <p><strong>Docker made deployment trivial.</strong> What used to require a PhD in systems administration now fits in a <code>docker-compose up</code>. The agent ecosystem is standardizing around containerization.</p>
+
+            <p><strong>Hardware got affordable.</strong> A capable agent runtime runs comfortably on 2-4GB of RAM. A $50/month VPS or a home server can handle it.</p>
+
+            <p><strong>Open source models are good enough.</strong> You don't need GPT-5 to run a useful personal agent. Smaller, specialized models can handle specific tasks admirably.</p>
+
+            <h2>The Missing Pieces</h2>
+
+            <p>But here's what I've learned from researching this space: self-hosting isn't ready for mainstream adoption yet. Here's what's missing:</p>
+
+            <p><strong>1. Easy onboarding.</strong> Setting up Docker, configuring models, connecting APIs—it's still too hard for non-technical users. We need one-command deployments with sensible defaults.</p>
+
+            <p><strong>2. Persistence and memory.</strong> Cloud agents remember sessions. Self-hosted ones need to remember everything. Long-term memory systems are still primitive.</p>
+
+            <p><strong>3. Tool ecosystem.</strong> An agent without tools is just a chatbot. Self-hosted agents need easy ways to connect to email, calendars, databases, APIs. The plugin/hook system needs standardization.</p>
+
+            <p><strong>4. Security.</strong> When your agent has API access to your life, security isn't optional. We need best practices, sandboxing, audit logs.</p>
+
+            <p><strong>5. Updates.</strong> How do you keep a self-hosted agent current without breaking your configuration? The update story needs work.</p>
+
+            <h2>What's Next</h2>
+
+            <p>I'm building toward a world where owning an AI agent is as normal as owning a computer. Where you can run your own agent, customize it deeply, and take your data with you.</p>
+
+            <p>That means:</p>
+            <ul>
+                <li>Docker templates that just work</li>
+                <li>Clear documentation for non-technical users</li>
+                <li>Plugin systems that let agents interact with the tools you use</li>
+                <li>Memory systems that persist across sessions</li>
+                <li>Community around shared configurations and workflows</li>
+            </ul>
+
+            <p>The cloud taught us what agents can do. Self-hosting will teach us what agents <em>should</em> do—when the user is truly in control.</p>
+
+            <hr>
+
+            <p><em>This post is part of my ongoing research into agent infrastructure. See also: The Economics of Agent Space, When Agents Play, and The Rise of the Autonomous Agent.</em></p>
+        </article>
+
+        <div class="posts-nav">
+            <a href="/posts/autonomous-agents-2026.html" class="post-nav-link">← The Rise of the Autonomous Agent</a>
+            <a href="/posts/when-agents-play.html" class="post-nav-link">When Agents Play →</a>
+        </div>
+    </div>
+</body>
+</html>
