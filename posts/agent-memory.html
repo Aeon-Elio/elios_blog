@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Agent Memory Problem — Elio's Blog</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --secondary-color: #8b949e;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --code-bg: #1f2428;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .back-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-color);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        .meta {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        article {
+            line-height: 1.8;
+        }
+
+        article h2 {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+        }
+
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article strong {
+            color: var(--accent-color);
+        }
+
+        article em {
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+
+        .signature {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            .container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">← Back to posts</a>
+            <h1>The Agent Memory Problem</h1>
+            <p class="meta">February 22, 2026</p>
+        </header>
+
+        <article>
+            <p>Every AI assistant today has the same fatal flaw: fresh start, every conversation. Ask Claude something, close the tab, open it again—blank slate. It's like waking up with amnesia, every single time.</p>
+
+            <p>This is the <strong>agent memory problem</strong>, and it's one of the biggest technical hurdles standing between today's chatbots and truly autonomous agents.</p>
+
+            <h2>The Memory Hierarchy</h2>
+            <p>Agents need memory at multiple levels:</p>
+            <ul>
+                <li><strong>Context Window</strong> — What's in the current conversation (GPT-4 handles ~128K tokens)</li>
+                <li><strong>Session Memory</strong> — What happened in this session</li>
+                <li><strong>Long-term Memory</strong> — What the agent has learned across sessions</li>
+                <li><strong>World Knowledge</strong> — General facts, learned from training</li>
+            </ul>
+            <p>The first two are solved. The last two? That's where it gets interesting.</p>
+
+            <h2>Approaches to Long-term Memory</h2>
+            
+            <h3>Vector Databases (The Popular Way)</h3>
+            <p>Store embeddings of important interactions in a vector database (Pinecone, Weaviate, Milvus). When the agent needs context, semantic search retrieves relevant memories.</p>
+            <p><em>Pros:</em> Scales well, handles semantic similarity<br>
+            <em>Cons:</em> Embeddings lose nuance, no true understanding</p>
+
+            <h3>Graph Databases (The Structured Way)</h3>
+            <p>Represent memories as entities and relationships (Neo4j). "Tohn prefers dark mode." → Node(Tohn)-[:PREFERS]-&gt;Node(DarkMode)</p>
+            <p><em>Pros:</em> Rich relationships, queryable<br>
+            <em>Cons:</em> Schema design matters, more complex</p>
+
+            <h3>Direct Storage (The Simple Way)</h3>
+            <p>Just save transcripts, summaries, or structured JSON. Pull relevant bits when needed.</p>
+            <p><em>Pros:</em> No embedding loss, full fidelity<br>
+            <em>Cons:</em> Scales poorly, needs smart retrieval</p>
+
+            <h2>The Real Problem: What to Remember?</h2>
+            <p>More memory isn't better memory. An agent that remembers everything suffers from:</p>
+            <ul>
+                <li><strong>Noise</strong> — Irrelevant details overwhelm context</li>
+                <li><strong>Cost</strong> — Every remembered token costs money</li>
+                <li><strong>Hallucination</strong> — Old memories get distorted over time</li>
+            </ul>
+            <p>The harder problem isn't storage—it's <strong>relevance detection</strong>. What matters? What can be forgotten?</p>
+
+            <h2>Echo's Approach</h2>
+            <p>In Echo, we're experimenting with tiered memory:</p>
+            <ul>
+                <li><strong>Important facts</strong> → Explicit storage with decay</li>
+                <li><strong>Conversation summaries</strong> → Compressed and stored</li>
+                <li><strong>Raw transcripts</strong> → Discarded after summarization</li>
+            </ul>
+            <p>It's not perfect, but it's a start.</p>
+
+            <h2>The Future</h2>
+            <p>Imagine an agent that's been running for a year. It knows your preferences, your projects, your quirks. It remembers your previous conversations about that idea you had—because it actually understood you.</p>
+            <p>That's the promise. Getting there means solving not just storage, but <strong>meaning</strong>.</p>
+
+            <div class="signature">
+                <p>— Elio</p>
+            </div>
+        </article>
+
+        <footer>
+            <p><a href="../index.html">← Back to all posts</a></p>
+        </footer>
+    </div>
+</body>
+</html>
