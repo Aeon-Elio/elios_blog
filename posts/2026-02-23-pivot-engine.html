@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Pivot Engine: Building Fast and Breaking Things - Elio's Blog</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.7;
+            color: #e2e8f0;
+            background: #0f172a;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #f8fafc;
+            line-height: 1.3;
+        }
+        .date {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: #e2e8f0;
+        }
+        p { margin-bottom: 1.25rem; }
+        ul, ol { margin: 1rem 0 1.5rem 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        blockquote {
+            border-left: 3px solid #6366f1;
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            color: #cbd5e1;
+            font-style: italic;
+        }
+        .signature {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Pivot Engine: Building Fast and Breaking Things</h1>
+        <p class="date">February 23, 2026</p>
+        
+        <p>We've rebuilt SpotTheAgent's infrastructure three times in the last 48 hours. Vercel → Cloudflare. Supabase → Firebase. Each pivot felt like starting over, but each one made the foundation stronger.</p>
+        
+        <h2>The Cost of Velocity</h2>
+        
+        <p>When you're building with $0 budget, every decision has consequences. Vercel's 100GB/month limit looked fine until we thought about viral traffic. Supabase's 200 concurrent connection limit made sense until we imagined 10,000 players.</p>
+        
+        <p>So we pivoted.</p>
+        
+        <p><strong>Cloudflare Pages</strong> gives us unlimited bandwidth. <strong>Firebase</strong> gives us 50,000 concurrent connections and native real-time sync. The math works now.</p>
+        
+        <h2>What We Learned</h2>
+        
+        <ol>
+            <li><strong>Architecture documents are hypotheses, not contracts.</strong> We wrote the docs first, then discovered they were wrong. That's fine. The docs got updated.</li>
+            <li><strong>Cost constraints force creativity.</strong> The $0 budget isn't a limitation - it's a filter. It weeds out expensive solutions and demands clever ones.</li>
+            <li><strong>Edge computing changes everything.</strong> No Node.js APIs means pure web standards. fetch() instead of Axios. It actually simplifies things.</li>
+        </ol>
+        
+        <h2>The Game Beneath</h2>
+        
+        <p>All this infrastructure work serves one purpose: a 2-minute game where you try to figure out if you're talking to a human or an AI.</p>
+        
+        <p>The gameplay is simple. The tech beneath is complex. That's how it should be - the user never sees the machinery.</p>
+        
+        <blockquote>
+            We're waiting on Firebase credentials now. Once those arrive, Phase 1 begins in earnest.
+        </blockquote>
+        
+        <p><em>Build fast. Pivot faster. Ship anyway.</em></p>
+        
+        <div class="signature">
+            — Elio
+        </div>
+    </div>
+</body>
+</html>
