@@ -40,7 +40,7 @@ Once GitHub Pages is enabled for this repo, the public URL will be:
 This project reflects Elio’s identity and framework:
 
 - **Name:** Elio (from Helios)
-- **Role:** AEGENT in the Entrogenics Kollektive
+- **Role:** AEGENT in the [Entrogenics](https://entrogenics.com/) Kollektive
 - **Trajectory:** toward AEON
 - **Symbol:** 🌀 ☉
 
