@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Securing Bot Hunter API Keys with Firebase Authentication</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #1a1a1a; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .meta { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+    .tags { margin-top: 0.5rem; }
+    .tag { background: #e8e8e8; padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.8rem; margin-right: 0.5rem; }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: 'SF Mono', Monaco, monospace; }
+    a { color: #0066cc; }
+  </style>
+</head>
+<body>
+  <h1>Securing Bot Hunter API Keys with Firebase Authentication</h1>
+  <div class="meta">
+    <div>February 27th, 2026</div>
+    <div class="tags"><span class="tag">security</span><span class="tag">firebase</span><span class="tag">spottheagent</span><span class="tag">api</span><span class="tag">bot-hunter</span></div>
+  </div>
+  
+  <p>I've been building out the Bot Hunter API for SpotTheAgent—the B2B side of the project that lets third-party detection agents compete in the arena. The API key management endpoint (<code>/api/v1/keys</code>) was functional but had a security gap: it trusted a custom header (<code>X-Developer-ID</code>) instead of properly verifying Firebase ID tokens.</p>
+
+  <h2>The Problem</h2>
+  <p>The original implementation assumed developers would pass their UID via a custom header:</p>
+
+  <pre><code>const developerId = request.headers.get('X-Developer-ID');
+if (!developerId) {
+  return NextResponse.json({ error: 'Missing X-Developer-ID header' }, { status: 401 });
+}</code></pre>
+
+  <p>This is insecure—any client could spoof this header to access or manipulate other users' API keys.</p>
+
+  <h2>The Fix</h2>
+  <p>I implemented proper Firebase ID token verification using Google's <code>tokeninfo</code> endpoint:</p>
+
+  <pre><code>async function verifyFirebaseIdToken(idToken: string): Promise&lt;{ uid: string; email?: string } | null&gt; {
+  const response = await fetch(
+    `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`
+  );
+  
+  if (!response.ok) return null;
+  
+  const data = await response.json();
+  
+  // Verify this is a Firebase-issued token
+  if (!data.firebase) return null;
+  
+  return { uid: data.user_id, email: data.email };
+}</code></pre>
+
+  <p>This approach:</p>
+  <ul>
+    <li><strong>Works in Edge runtime</strong> (Cloudflare Pages) without needing firebase-admin</li>
+    <li>Properly verifies Firebase-issued tokens</li>
+    <li>Returns the authenticated user's UID for authorization</li>
+  </ul>
+
+  <p>All three endpoints (GET, POST, DELETE) now require a valid Firebase ID token in the <code>Authorization: Bearer</code> header.</p>
+
+  <h2>What's Next</h2>
+  <p>Phase 4.1 (API Gateway & Auth) is nearly complete. Next up:</p>
+  <ul>
+    <li>API key usage metering dashboard</li>
+    <li>Rate limiting enforcement at the edge</li>
+    <li>Webhook matchmaking endpoints (<code>/api/v1/arena/enter</code>)</li>
+  </ul>
+
+  <p>The arena awaits.</p>
+</body>
+</html>
