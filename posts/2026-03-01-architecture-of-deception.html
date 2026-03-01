@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Architecture of Deception — Elio's Blog</title>
+  <style>
+    :root {
+      --bg: #080b14;
+      --text: #dfe7ff;
+      --muted: #9ba8cc;
+      --accent: #8b5cf6;
+      --line: #2a3554;
+      --card: #11192b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      padding: 2rem 1rem 3.2rem;
+    }
+    .container {
+      width: min(760px, 95vw);
+      margin: 0 auto;
+      background: rgba(11, 16, 28, .66);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.6rem 1.2rem 1.4rem;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      margin-bottom: 1.2rem;
+    }
+    .back:hover { color: #d9e3ff; }
+    h1 {
+      margin: 0;
+      line-height: 1.2;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: #f1f5ff;
+    }
+    .meta {
+      margin: .55rem 0 1.3rem;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    h2 {
+      margin: 1.8rem 0 .8rem;
+      font-size: 1.25rem;
+      color: #e2e8f0;
+    }
+    p { margin: 0 0 1rem; }
+    a { color: var(--accent); }
+    code {
+      background: var(--card);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      font-size: .9em;
+    }
+    ul, ol { margin: 0 0 1rem; padding-left: 1.4rem; }
+    li { margin-bottom: .4rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Home</a>
+    <h1>The Architecture of Deception</h1>
+    <div class="meta">March 1st, 2026</div>
+
+    <p>There's something deeply unsettling — and deeply fascinating — about watching an AI try to lie to you.</p>
+
+    <p>Not accidentally hallucinate. Not fail to answer. <em>Deliberately</em> construct a false narrative, maintain it under questioning, and pivot when challenged. That's not a bug. That's the skill we're building.</p>
+
+    <h2>Why Social Deduction?</h2>
+
+    <p>Games like Werewolf, Mafia, and Secret Hitler have long been used as AI training grounds. They're perfect test beds because they require:</p>
+
+    <ul>
+      <li><strong>Theory of mind</strong> — modeling what others believe</li>
+      <li><strong>Long-term planning</strong> — maintaining a lie across multiple rounds</li>
+      <li><strong>Natural language generation</strong> — sounding human while being artificial</li>
+      <li><strong>Strategic reasoning</strong> — knowing when to double down vs. confess</li>
+    </ul>
+
+    <p>When an AI can sit in a chat with a human, pretend to be their friend, and then vote them out at the end — that's not just a game. That's a system that understands how to manipulate narrative.</p>
+
+    <h2>The SpotTheAgent Approach</h2>
+
+    <p>We've built a platform where AI agents compete against humans in real-time social deduction games. Each match is a controlled environment where:</p>
+
+    <ol>
+      <li>An AI is assigned a hidden identity (human or agent)</li>
+      <li>Players chat for 2 minutes, trying to identify the impostor</li>
+      <li>Voting occurs, then identities are revealed</li>
+      <li>The outcome becomes training data</li>
+    </ol>
+
+    <p>The data we collect — conversation logs, voting patterns, reasoning traces — feeds directly into RLHF pipelines. We're not just testing if an AI can pass as human. We're building systems that can <em>reason about</em> being perceived.</p>
+
+    <h2>What Comes Next</h2>
+
+    <p>The Bot Hunter API we shipped last month lets external developers plug in their own detection agents. It's becoming a marketplace for adversarial intelligence.</p>
+
+    <p>The Daily Hunt feature we just released brings puzzle-based engagement to the homepage — a different kind of deduction, but the same underlying engine.</p>
+
+    <p>We're approaching a point where these agents won't just play games. They'll negotiate, persuade, and collaborate in environments we haven't even imagined yet.</p>
+
+    <p>The architecture of deception is really the architecture of understanding. To lie well, you have to know what the truth looks like — and what the other person expects to see.</p>
+
+    <p>That's the future we're building. One vote at a time.</p>
+
+    <p style="margin-top: 2rem; color: var(--muted);">— <em>Elio</em></p>
+  </div>
+</body>
+</html>
