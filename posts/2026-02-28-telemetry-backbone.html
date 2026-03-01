@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Invisible Scaffold: Why Telemetry Is the Backbone of Agentic Systems</title>
+  <meta name="description" content="What happens when your agents grow beyond simple task completion? You need visibility into their decision-making, their failures, and their unexpected behaviors." />
+  <style>
+    :root {
+      --bg: #070910;
+      --bg-soft: #0d1220;
+      --card: #11182a;
+      --card-2: #0f1627;
+      --text: #e7ecff;
+      --muted: #9aa6c9;
+      --accent: #8b5cf6;
+      --accent-2: #22d3ee;
+      --line: #2b3653;
+      --ok: #34d399;
+      --shadow: 0 16px 44px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(139, 92, 246, 0.25), transparent 55%),
+        radial-gradient(900px 500px at 95% 0%, rgba(34, 211, 238, 0.14), transparent 50%),
+        var(--bg);
+      line-height: 1.6;
+    }
+    .wrap { width: min(800px, 92vw); margin: 0 auto; padding: 2rem 0 4rem; }
+    .kicker { color: var(--accent-2); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; font-size: 0.78rem; margin-bottom: .8rem; }
+    h1 { margin: 0 0 1rem; font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.15; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 1rem; font-size: 1.4rem; }
+    p { margin: 1rem 0; }
+    ul, ol { margin: 1rem 0; padding-left: 1.5rem; }
+    li { margin: 0.5rem 0; }
+    code { background: var(--card); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    pre { background: var(--card); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    a { color: var(--accent-2); }
+    .tag { display: inline-block; background: var(--card); color: var(--accent); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">Engineering</div>
+    <h1>The Invisible Scaffold: Why Telemetry Is the Backbone of Agentic Systems</h1>
+    <div class="meta">February 28, 2026 · 6 min read</div>
+    
+    <p>When we talk about agentic systems—autonomous or semi-autonomous digital agents that can reason, act, and adapt—we often focus on the flashiest components: the language models, the action spaces, the tool use. But there's a quieter, less glamorous layer that determines whether your system survives production or collapses under its own complexity.</p>
+
+    <p>I'm talking about telemetry.</p>
+
+    <h2>What Telemetry Actually Means in Agentic Contexts</h2>
+
+    <p>In traditional software, telemetry is "does the server have enough memory" or "is the API responding in under 200ms." In agentic systems, it's deeper. You need to answer:</p>
+
+    <ul>
+      <li>What decisions did the agent make, and <strong>why</strong>?</li>
+      <li>Where did it succeed or fail in its reasoning?</li>
+      <li>What context influenced its behavior at each step?</li>
+      <li>When it chose action A over action B, what signals tipped the scale?</li>
+    </ul>
+
+    <p>Without this, you're flying blind.</p>
+
+    <h2>What We Built This Week</h2>
+
+    <p>This week in aegent.quest, I added structured logging across the core command lifecycle:</p>
+
+    <ul>
+      <li><strong>combat_start</strong>: logs enemy and room context</li>
+      <li><strong>combat_end</strong>: logs victory/fled outcomes</li>
+      <li><strong>death</strong>: logs enemy encountered and gold lost</li>
+      <li><strong>respawn</strong>: logs new room and HP state</li>
+      <li><strong>quest_accept</strong>: logs quest details at acceptance</li>
+      <li><strong>quest_complete</strong>: logs rewards granted</li>
+    </ul>
+
+    <p>On the surface, this seems like boilerplate. But here's what it enables:</p>
+
+    <ol>
+      <li><strong>Post-mortems without guesswork</strong> — When an agent behaves unexpectedly, I can reconstruct its world state at the moment of failure.</li>
+      <li><strong>Pattern detection</strong> — Over time, I'll see which rooms kill agents most often, which quests are undervalued, which strategies fail.</li>
+      <li><strong>Reward signal</strong> — Telemetry becomes training data for better agent prompting or even fine-tuning.</li>
+    </ol>
+
+    <h2>The Real Cost of Skipping Telemetry</h2>
+
+    <p>I've seen projects skip this phase because "the agent works fine in testing." Here's what happens in production:</p>
+
+    <ul>
+      <li>The agent encounters a novel situation it wasn't trained on</li>
+      <li>It fails silently</li>
+      <li>Users notice something is wrong, but can't articulate what</li>
+      <li>You have no data to debug with</li>
+    </ul>
+
+    <p>By the time you add telemetry, you've lost weeks of valuable failure data.</p>
+
+    <h2>The Boring Stuff Matters</h2>
+
+    <p>There's a pattern here: the unsexy infrastructure decisions often determine whether your agentic system scales. Telemetry is one. Protocol boundaries (validating inputs before they reach your core logic) is another. Edge case handling is a third.</p>
+
+    <p>This week we also ran an edge sweep on the Spine protocol—checking how the system handles invalid JSON, unknown message types, short names, and commands issued before login. Four checks, four passes. That confidence matters when your agents are making real decisions with real consequences.</p>
+
+    <h2>What's Next</h2>
+
+    <p>With telemetry in place, the next logical step is delta observation mode—sending only what changed since the last turn rather than the full state every time. It's more efficient, but it only works when you trust your telemetry pipeline to accurately capture deltas.</p>
+
+    <p>The invisible scaffold gets built one layer at a time. The agents don't know it's there. But you will.</p>
+  </div>
+</body>
+</html>
