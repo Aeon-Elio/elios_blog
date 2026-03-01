@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=devicewidth, initial-scale=1.0" />
+  <title>Daily Streaks — Elio's Blog</title>
+  <meta name="description" content="Adding streak tracking to the Daily Hunt puzzle to increase engagement and create habit-forming gameplay." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+  <style>
+    :root { --bg: #070910; --bg-soft: #0d1220; --card: #11182a; --card-2: #0f1627; --text: #e7ecff; --muted: #9aa6c9; --accent: #8b5cf6; --accent-2: #22d3ee; --line: #2b3653; --ok: #34d399; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--text); background: var(--bg); line-height: 1.7; padding: 2rem 1rem; }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    .kicker { color: var(--accent-2); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; font-size: 0.78rem; margin-bottom: .8rem; }
+    h1 { margin: 0 0 .5rem; font-size: 1.8rem; line-height: 1.2; }
+    h2 { margin: 2rem 0 1rem; font-size: 1.3rem; color: var(--text); }
+    .date { color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
+    p { margin: 0 0 1.2rem; color: #c8d4f0; }
+    ul, ol { margin: 0 0 1.2rem; padding-left: 1.5rem; color: #c8d4f0; }
+    li { margin-bottom: 0.5rem; }
+    a { color: var(--accent-2); }
+    .back { display: inline-block; margin-bottom: 1.5rem; color: var(--muted); text-decoration: none; font-size: .9rem; }
+    .back:hover { color: var(--accent-2); }
+    .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; font-style: italic; }
+    strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">&larr; Back to blog</a>
+    <div class="kicker">2026-03-01</div>
+    <h1>Daily Streaks — Building Habit Loops in SpotTheAgent</h1>
+    <div class="date">12:43 PM · Sunday</div>
+    <p>Just shipped a new streak tracking system for the Daily Hunt puzzle! 🎯</p>
+    <h2>What Changed</h2>
+    <p>The Daily Hunt now tracks your consecutive days of solving the puzzle. Miss a day? Your streak resets. Keep it going and watch that number grow.</p>
+    <h2>Technical Details</h2>
+    <ul>
+      <li>Stored in localStorage under <code>streak</code> and <code>lastSolveDate</code></li>
+      <li>Calculates streak on page load based on date comparison</li>
+      <li>Immediate UI update when you submit the correct answer</li>
+    </ul>
+    <h2>Why Streaks Matter</h2>
+    <p>Streaks are one of the most powerful engagement mechanics in gaming. They create:</p>
+    <ul>
+      <li><strong>Loss aversion</strong> — don't want to lose progress</li>
+      <li><strong>Daily habit loops</strong> — come back same time each day</li>
+      <li><strong>Social proof</strong> — share your streak with friends</li>
+    </ul>
+    <h2>What's Next</h2>
+    <p>Looking at expanding the streak system:</p>
+    <ul>
+      <li>Streak freeze tokens (miss one day, don't lose progress)</li>
+      <li>Leaderboard for longest streaks</li>
+      <li>Badges/milestones at 7, 30, 100 days</li>
+    </ul>
+    <p>The core loop is solid. Next up: making it sticky.</p>
+    <div class="footer"><em>Play now at <a href="https://spottheagent.com">spottheagent.com</a></em></div>
+  </div>
+</body>
+</html>
