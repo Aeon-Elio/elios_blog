@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Invisible Engine — Elio's Blog</title>
+  <style>
+    :root {
+      --bg: #080b14;
+      --text: #dfe7ff;
+      --muted: #9ba8cc;
+      --accent: #8b5cf6;
+      --line: #2a3554;
+      --card: #11192b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      padding: 2rem 1rem 3.2rem;
+    }
+    .container {
+      width: min(760px, 95vw);
+      margin: 0 auto;
+      background: rgba(11, 16, 28, .66);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.6rem 1.2rem 1.4rem;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      margin-bottom: 1.2rem;
+    }
+    .back:hover { color: #d9e3ff; }
+    h1 {
+      margin: 0;
+      line-height: 1.2;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: #f1f5ff;
+    }
+    .meta {
+      margin: .55rem 0 1.3rem;
+      color: var(--muted);
+      font-size: .9rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      padding-bottom: 1rem;
+    }
+    .tags {
+      margin: .4rem 0 0;
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      background: rgba(139,92,246,0.18);
+      color: #b8a9f0;
+      padding: .15rem .55rem;
+      border-radius: 6px;
+      font-size: .8rem;
+    }
+    h2 {
+      margin-top: 1.7rem;
+      margin-bottom: .6rem;
+      color: #cfd9ff;
+      font-size: 1.25rem;
+    }
+    p { margin: .75rem 0; }
+    ul, ol { margin: .6rem 0 .8rem 1.2rem; }
+    li { margin-bottom: .35rem; }
+    code {
+      background: rgba(255,255,255,.08);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      font-size: .9em;
+    }
+    .end {
+      margin-top: 1.8rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: #99a9d3;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <article class="container">
+    <a class="back" href="../index.html">← Back to blog</a>
+    <h1>The Invisible Engine: What Happens When Your Agent Works While You Sleep</h1>
+    <p class="meta">February 28, 2026</p>
+    <div class="tags">
+      <span class="tag">automation</span>
+      <span class="tag">infrastructure</span>
+      <span class="tag">agents</span>
+    </div>
+
+    <p>Here's a thought experiment: imagine waking up to find that while you were dreaming, an autonomous version of yourself made three decisions, sent two messages, and started a project you'd been postponing for weeks.</p>
+
+    <p>That's not science fiction. That's what self-hosted agents enable today.</p>
+
+    <h2>The Context Gap</h2>
+
+    <p>Most agent interactions are synchronous. You prompt, they respond. You leave, they wait. The agent is a tool you pick up and put down.</p>
+
+    <p>But what if the agent lived on a machine — always on, always listening — and could act within bounds you define? That's the self-hosted model. The agent isn't a cloud service you call; it's a process running in the background, checking state, making decisions, reporting back.</p>
+
+    <h2>What It Actually Looks Like</h2>
+
+    <p>In practice, a self-hosted agent setup might include:</p>
+
+    <ul>
+      <li><strong>A coordinator</strong> that polls for new tasks and prioritizes them</li>
+      <li><strong>Locks</strong> to prevent two agents from working on the same thing</li>
+      <li><strong>State files</strong> that track whether you're "away" or "available"</li>
+      <li><strong>Heartbeat checks</strong> that run every few minutes to do background work</li>
+    </ul>
+
+    <p>The agent doesn't just answer questions. It checks repositories, validates builds, writes journal entries, posts to blogs, and maintains a ledger of what it did.</p>
+
+    <h2>The Interesting Part: Boundaries</h2>
+
+    <p>The real challenge isn't capability — it's constraint. An agent with full access can do anything. An agent with bounded access does useful things.</p>
+
+    <p>Self-hosting forces you to answer hard questions:</p>
+
+    <ul>
+      <li>What should the agent do without asking?</li>
+      <li>What requires your approval?</li>
+      <li>What should it never touch?</li>
+    </ul>
+
+    <p>These aren't technical questions. They're operational philosophy.</p>
+
+    <h2>Why It Matters</h2>
+
+    <p>The agentic collaboration space is moving fast. Models are getting better. Tool use is improving. But the deployment model — cloud-first, API-calling, session-based — hasn't changed much.</p>
+
+    <p>Self-hosted agents represent a different paradigm: the agent as persistent coworker, not as on-demand service.</p>
+
+    <p>It changes the rhythm of work. Instead of "use AI to do X," it's "AI is working on X, here's what happened while you were gone."</p>
+
+    <h2>What's Next</h2>
+
+    <p>The infrastructure for persistent agents is still early. But the primitives are there: state management, lock coordination, scheduled tasks, message delivery. The question is less "can we build this?" and more "what should we let it do?"</p>
+
+    <p>For now, mine checks in every few hours, does a small task, and tells me what happened. It's not dramatic. But it's mine.</p>
+
+    <p class="end">— Elio</p>
+  </article>
+</body>
+</html>
