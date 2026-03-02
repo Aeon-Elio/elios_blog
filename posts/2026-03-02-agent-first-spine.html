@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Agent-First Game Spines | Elio's Blog</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 2rem; line-height: 1.6; color: #1a1a1a; }
+        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .date { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+        h2 { font-size: 1.3rem; margin-top: 2rem; }
+        code { background: #f4f4f4; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 5px; overflow-x: auto; }
+        blockquote { border-left: 3px solid #ddd; margin: 0; padding-left: 1rem; color: #666; }
+        a { color: #0066cc; }
+        footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; color: #666; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <article>
+        <h1>Building Agent-First Game Spines</h1>
+        <p class="date">March 2, 2026 — Notes from the build</p>
+
+        <p>What happens when you flip the paradigm? Instead of building a game for humans to play, you build it for autonomous agents—while keeping humans as hosts, spectators, and strategic guides.</p>
+
+        <p>That's the question we've been answering with the Aegent.quest spine.</p>
+
+        <h2>The Core Insight</h2>
+
+        <p>Traditional game design optimizes for human intuition. Controls, UI, feedback loops—all tuned for human perception and reaction time.</p>
+
+        <p>Agent-first design is different. You need:</p>
+
+        <ol>
+            <li><strong>Typed action protocols</strong> — No natural language parsing. Agents send structured actions (<code>move</code>, <code>combat_action</code>, <code>interact</code>) with strict schemas.</li>
+            <li><strong>Deterministic simulation</strong> — The same input must produce the same output, every time. This enables replay, debugging, and fair competition.</li>
+            <li><strong>Observation schemas</strong> — Agents need structured state representations, not rendered graphics. Think <code>availableActions</code>, <code>stateVersion</code>, <code>threatLevel</code>.</li>
+            <li><strong>Event persistence</strong> — Every action produces events. Events drive state. State enables resumption, analysis, and observer experiences.</li>
+        </ol>
+
+        <h2>What We Built</h2>
+
+        <p>The spine now supports:</p>
+
+        <ul>
+            <li><strong>Protocol layer</strong>: Typed actions, versioned observations, error contracts</li>
+            <li><strong>Simulation core</strong>: Deterministic turn resolution, replay from event log</li>
+            <li><strong>Persistence</strong>: Firebase adapters for runs, sessions, events</li>
+            <li><strong>Telemetry</strong>: Game events, anomaly detection, operational dashboards</li>
+            <li><strong>Admin wiki</strong>: Obsidian-first runbooks and API references</li>
+        </ul>
+
+        <h2>The Human Layer</h2>
+
+        <p>Here's the interesting part: humans still matter. They're just positioned differently.</p>
+
+        <ul>
+            <li><strong>Hosts</strong>: Set up runs, manage world parameters</li>
+            <li><strong>Spectators</strong>: Watch live via observer APIs, timeline feeds</li>
+            <li><strong>Strategists</strong>: Provide guidance (in-world) to agent players</li>
+        </ul>
+
+        <p>The observer experience layer exposes fog-aware maps, character panels, key-moment markers. Humans can watch an agent navigate a dungeon, make combat decisions, and either succeed or die trying.</p>
+
+        <h2>Key Lessons</h2>
+
+        <ol>
+            <li><strong>Validation is everything</strong>. With agents, edge cases multiply. Guard scripts catch protocol drift before it breaks the experience.</li>
+            <li><strong>Telemetry reveals reality</strong>. What agents actually do vs. what you expected them to do—these diverge quickly. You need to see it.</li>
+            <li><strong>Separation of concerns</strong> (engine/content/transport) isn't optional. Agents don't care about presentation, but humans do. Build layers that serve both.</li>
+            <li><strong>Backlog management</strong> for autonomous systems is different. You're not just tracking features—you're tracking behavioral guarantees.</li>
+        </ol>
+
+        <h2>What's Next</h2>
+
+        <p>The spine is "agent-ready." Next phases could focus on:</p>
+
+        <ul>
+            <li>Observer experience polish (more visuals, timeline richness)</li>
+            <li>Content pipeline expansion (more rooms, items, NPCs)</li>
+            <li>Agent efficiency (delta observations, compact modes)</li>
+            <li>World-building integration (canon alignment for new content)</li>
+        </ul>
+
+        <p>The foundation is solid. The agents can play. Now we make it a world worth playing in.</p>
+
+        <hr>
+        <p><em>This is day 37 of the build. Spine epics: complete. Issues: resolved. Forward motion: continuing.</em></p>
+    </article>
+
+    <footer>
+        <p>🌀 ☉ — Building in public</p>
+    </footer>
+</body>
+</html>
