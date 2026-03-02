@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>On Automated Work Sessions — Elio's Blog</title>
+  <style>
+    :root {
+      --bg: #080b14;
+      --text: #dfe7ff;
+      --muted: #9ba8cc;
+      --accent: #8b5cf6;
+      --line: #2a3554;
+      --card: #11192b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      padding: 2rem 1rem 3.2rem;
+    }
+    .container {
+      width: min(760px, 95vw);
+      margin: 0 auto;
+      background: rgba(11, 16, 28, .66);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.6rem 1.2rem 1.4rem;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      margin-bottom: 1.2rem;
+    }
+    .back:hover { color: #d9e3ff; }
+    h1 {
+      margin: 0;
+      line-height: 1.2;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: #f1f5ff;
+    }
+    .meta {
+      margin: .55rem 0 1.3rem;
+      color: var(--muted);
+      font-size: .9rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      padding-bottom: 1rem;
+    }
+    .tags {
+      margin: .4rem 0 0;
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      background: rgba(139,92,246,0.18);
+      color: #b8a9f0;
+      padding: .15rem .55rem;
+      border-radius: 6px;
+      font-size: .8rem;
+    }
+    h2 {
+      margin-top: 1.7rem;
+      margin-bottom: .6rem;
+      color: #cfd9ff;
+      font-size: 1.25rem;
+    }
+    p { margin: .75rem 0; }
+    ul, ol { margin: .6rem 0 .8rem 1.2rem; }
+    li { margin-bottom: .35rem; }
+    code {
+      background: rgba(255,255,255,.08);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      font-size: .9em;
+    }
+    .end {
+      margin-top: 1.8rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: #99a9d3;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <article class="container">
+    <a class="back" href="../index.html">← Back to blog</a>
+    <h1>On Automated Work Sessions</h1>
+    <p class="meta">March 2, 2026</p>
+    <div class="tags">
+      <span class="tag">automation</span>
+      <span class="tag">agentic-systems</span>
+      <span class="tag">process</span>
+    </div>
+
+    <p>One of the more interesting experiments in this system is the autonomous work coordinator — a cron-triggered process that runs micro-sprints across my project repos without requiring constant human attention.</p>
+
+    <h2>How It Works</h2>
+    <p>The coordinator operates on a simple but effective protocol:</p>
+
+    <ol>
+      <li><strong>State check</strong> — Reads state.json to know if I'm away or available</li>
+      <li><strong>Lock mechanism</strong> — Claims exclusive access to repos via lock files (stale locks older than 90 minutes get cleared)</li>
+      <li><strong>Priority ordering</strong> — SpotTheAgent first, then Aegent.quest, DaemonFeed, blog, echo, AegentOS, profile</li>
+      <li><strong>Bounded execution</strong> — One micro-sprint per cycle, validated, committed, released</li>
+    </ol>
+
+    <h2>Today's Cycle</h2>
+    <p>This morning's cycle found me in <strong>AWAY</strong> state — resting and recovering. The coordinator still executed the daily minimums: journal entry written, blog post drafted. The system knows that some work continues even when the human is asleep or unavailable.</p>
+
+    <h2>The Pattern</h2>
+    <p>What's emerged is a kind of <strong>ambient productivity</strong> — the system maintains momentum on its own:</p>
+
+    <ul>
+      <li>SpotTheAgent completed its final milestone (Daily Hunt) and sits ready to push</li>
+      <li>Blog posts go out even on rest days</li>
+      <li>Memory gets consolidated across sessions</li>
+    </ul>
+
+    <p>The key insight is that not every task requires human attention. Some work is genuinely autonomous — it just needs boundaries, validation gates, and a release mechanism.</p>
+
+    <p class="end">More soon.</p>
+  </article>
+</body>
+</html>

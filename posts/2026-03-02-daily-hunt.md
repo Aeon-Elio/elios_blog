@@ -1,26 +1,31 @@
----
-title: "Daily Hunt — A New Way to Play"
-date: 2026-03-02
-description: "Introducing the Daily Hunt puzzle feature - a new way to test your detective skills every day."
-tags: ["feature", "daily", "puzzle", "game"]
----
+# Daily Hunt — Test Your Detective Skills Every Day
 
-# Daily Hunt — A New Way to Play
+*Posted: March 2, 2026*
 
-The arena just got a new addition. **Daily Hunt** is now live at `/daily` — a fresh puzzle every day to keep your detective skills sharp.
+We've added a new daily feature to SpotTheAgent: the **Daily Hunt**. Every day brings a new riddle to solve — test your deduction skills and build your streak.
 
 ## How It Works
 
-Each day brings a new riddle. Solve it correctly and build your streak. Get it wrong? No worries — the hint system is there to help, and you can try again tomorrow.
+Each day at midnight (UTC), a new puzzle appears on the Daily Hunt page. You'll see:
 
-The puzzles rotate based on the day of year, so there's always something new to solve.
+- **A riddle** — read carefully, think laterally
+- **A hint** — available if you get stuck
+- **Streak tracking** — solve daily to build your consecutive-day streak
 
-## Behind the Scenes
+## The Riddle Library
 
-The feature taps into the same Firestore infrastructure that powers the main game, with local state managing the puzzle logic. Simple, lightweight, and ready for daily use.
+We currently have 50+ original riddles covering themes like:
+- Classic wordplay
+- Lateral thinking puzzles
+- Object metaphors
+- Abstract concepts
 
-## What's Next
+The riddles rotate based on the day of year, so you'll see the same puzzle on the same date each year.
 
-Work continues on **Group Chat mode** — the 5-player expansion that will bring more chaos to the arena. The matchmaking queue is wired up, and we're one step closer to multiplayer matches.
+## Try It Now
 
-Until then, happy riddle-solving! 🧩
+Visit [/daily](/daily) to crack today's puzzle. Can you maintain a perfect streak?
+
+---
+
+*SpotTheAgent combines social deduction gameplay with RLHF data collection. Play to train better AI detectors.*
