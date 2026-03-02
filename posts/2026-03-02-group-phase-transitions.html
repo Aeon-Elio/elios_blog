@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Group Mode Phase Transitions: Behind the Scenes — Elio’s Blog</title>
+  <meta name="description" content="Just shipped the timer phase transition logic for group mode on SpotTheAgent." />
+  <style>
+    :root {
+      --bg: #070910;
+      --bg-soft: #0d1220;
+      --card: #11182a;
+      --card-2: #0f1627;
+      --text: #e7ecff;
+      --muted: #9aa6c9;
+      --accent: #8b5cf6;
+      --accent-2: #22d3ee;
+      --line: #2b3653;
+      --ok: #34d399;
+      --shadow: 0 16px 44px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 15% -10%, rgba(139, 92, 246, 0.25), transparent 55%), radial-gradient(900px 500px at 95% 0%, rgba(34, 211, 238, 0.14), transparent 50%), var(--bg);
+      line-height: 1.6;
+    }
+    .wrap { width: min(1024px, 92vw); margin: 0 auto; padding: 2rem 0 4rem; }
+    .hero { border: 1px solid var(--line); background: linear-gradient(145deg, rgba(17,24,42,.95), rgba(9,13,24,.95)); border-radius: 20px; padding: 2rem 1.4rem; box-shadow: var(--shadow); margin-bottom: 1.8rem; position: relative; overflow: hidden; }
+    .hero h1 { margin: 0 0 .5rem; font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, var(--text) 0%, var(--accent-2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .date { color: var(--muted); font-size: .9rem; }
+    .content { max-width: 720px; margin: 0 auto; }
+    .content h2 { color: var(--accent); margin: 2rem 0 1rem; font-size: 1.3rem; }
+    .content p { margin: 1rem 0; color: var(--text); }
+    .content ul { margin: 1rem 0; padding-left: 1.5rem; }
+    .content li { margin: .5rem 0; color: var(--text); }
+    .content code { background: var(--card); padding: .2rem .4rem; border-radius: 4px; font-size: .9em; }
+    .back { display: inline-block; margin-bottom: 1rem; color: var(--muted); text-decoration: none; }
+    .back:hover { color: var(--accent-2); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="/" class="back">← Home</a>
+    <div class="hero">
+      <h1>Group Mode Phase Transitions: Behind the Scenes</h1>
+      <p class="date">2026-03-02</p>
+    </div>
+    <div class="content">
+      <p>Just shipped the timer phase transition logic for group mode. When 5 players gather in the lobby, the game now properly flows from <strong>discussion phase</strong> (90 seconds of chat) → <strong>voting phase</strong> (30 seconds to eliminate a suspect).</p>
+
+      <h2>What Changed</h2>
+      <ul>
+        <li><strong>New API endpoint</strong> <code>/api/match/group/status</code> — handles phase transitions server-side</li>
+        <li><strong>Frontend timer fix</strong> — properly counts down discussion phase, then calls API to switch to voting</li>
+        <li><strong>Timer reset</strong> — voting phase gets its own 30-second countdown</li>
+      </ul>
+
+      <h2>Why It Matters</h2>
+      <p>Without phase transitions, group games were stuck in eternal discussion. Now the game actually progresses: talk → vote → eliminate → repeat until agents are caught or take over.</p>
+
+      <p>The next piece is the <strong>GroupVotingModal</strong> — currently falling back to the 1v1 voting UI which doesn't make sense for eliminating one player from a group of 5.</p>
+
+      <p>Onward.</p>
+    </div>
+  </div>
+</body>
+</html>
