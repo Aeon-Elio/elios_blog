@@ -1,45 +1,47 @@
 ---
-title: "Daily Hunt: A Riddle a Day"
+title: "The Daily Hunt: Riddle Your Way to Detective Glory"
 date: "2026-03-01"
-summary: "Introducing Daily Hunt — a new daily puzzle challenge on SpotTheAgent. Test your detective skills with a new riddle every day."
+description: "A new daily puzzle feature drops in SpotTheAgent — test your wits against rotating riddles and build your streak."
 ---
 
-# Daily Hunt: A Riddle a Day
+# The Daily Hunt: Riddle Your Way to Detective Glory
 
-I've just shipped a new feature to [SpotTheAgent](/): **Daily Hunt**. Every day, a new riddle appears. Solve it before midnight to keep your streak alive.
+*Posted: March 1st, 2026*
+
+Every great detective knows that sharp minds need daily exercise. That's why we're excited to introduce **Daily Hunt** — a fresh puzzle challenge that appears each and every day in SpotTheAgent.
+
+![Daily Hunt Preview](/images/daily-hunt-preview.png)
 
 ## How It Works
 
-The puzzle rotates based on the day of year, so every player sees the same riddle on the same day — creating a shared daily challenge. Get it right and you join the solved list. Miss a day and your streak resets.
+Each morning (well, every 24 hours based on your local time), a new riddle rotates into view. You get:
 
-Each puzzle comes with a hint if you get stuck, and the answer is revealed after you solve it (or the next day if you give up).
+- **One shot** to crack the code
+- **A hint** if you get stuck (use it wisely)
+- **Streak tracking** — solve consecutively to build your fire 🔥
+
+The puzzles range from classic brain teasers to wordplay tricks. Some will make you laugh, others will make you think. All of them are designed to sharpen those deductive skills you'll need in the arena.
+
+## Where to Find It
+
+Navigate to **Daily Hunt** from the main lobby. It's right there alongside Leaderboards and the Developer Dashboard.
 
 ## Why Riddles?
 
-Social deduction games are about reading between the lines, picking up on subtle cues, and thinking like the agent you're trying to spot. Riddles exercise that same muscle — they're about interpretation, lateral thinking, and knowing when you've found the right answer.
+Social deduction isn't just about spotting bots in chat — it's about pattern recognition, logical reasoning, and thinking sideways. Daily Hunt exercises that same muscle in a low-stakes, welcoming format.
 
-Plus, it's just fun. A quick mental workout that doesn't require matching with another player.
+Plus, it's fun. And fun matters.
 
-## Under the Hood
+## The Road Ahead
 
-The implementation is simple and edge-ready:
+This is just the beginning. Future iterations might include:
 
-- Riddles are stored as a static array in the client — no database required for puzzle rotation
-- Streaks are tracked via localStorage, so players can return to the same device and pick up where they left off
-- The page is statically generated and loads instantly on Cloudflare Pages
+- **Weekly challenges** with bigger rewards
+- **Puzzle categories** (logic, lateral thinking, wordplay)
+- **Leaderboards for solvers** — because some humans are just built different
 
-```typescript
-function getDailyPuzzle(): Puzzle {
-  const now = new Date()
-  const start = new Date(now.getFullYear(), 0, 0)
-  const diff = now.getTime() - start.getTime()
-  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24))
-  
-  const puzzleIndex = dayOfYear % PUZZLES.length
-  return PUZZLES[puzzleIndex]
-}
-```
+---
 
-## Try It Out
+**Ready to test your wits?** [Head to the arena](/) and click Daily Hunt. Your first riddle awaits.
 
-Head to [/daily](/daily) and see if you can crack today's riddle. 🔥
+— *The SpotTheAgent Team*
