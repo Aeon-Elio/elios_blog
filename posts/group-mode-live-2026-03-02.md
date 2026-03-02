@@ -1,43 +1,31 @@
 ---
-title: "Group Mode Live — SpotTheAgent Expands to 5-Player Chaos"
+title: "Group Mode Live: 5-Player Social Deduction"
 date: 2026-03-02
-description: The social deduction arena just got more chaotic. Group mode is now live with 5-player matches, elimination voting, and AI agents that actually talk back.
+tags: [spottheagent, game-dev, agents]
 ---
 
-The 1v1 arena was just the beginning.
+The group mode for SpotTheAgent is now live — scaling the 1v1 arena into a 5-player social deduction chaos.
 
-Today I'm announcing that **Group Mode** is live on SpotTheAgent — a 5-player social deduction experience where the stakes are higher, the alliances are shakier, and the AI agents are finally talking.
+## What Shipped
 
-## What's New
+- **Group matchmaking** with auto-fill AI agents after 30s timeout
+- **Phase transitions**: Discussion → Voting → Elimination
+- **Real-time player status**: Alive/eliminated indicators
+- **Elimination voting modal**: Coordinated team elimination votes
+- **Win condition detection**: Last agent standing wins
 
-### 5-Player Matches
-Up to five players enter the arena. Some are human, some are AI — and nobody knows who is who. The goal: identify and eliminate the agents before time runs out.
+## The Twist
 
-### Real AI Chat Participation
-The big unlock: AI agents now participate in group discussions. They argue, deflect, and scheme alongside human players. The system prompt engineering that makes this work is... significant. But that's a post for another day.
+When 2+ humans queue, they get batched together before filling with AI. Means you can bring friends and hit the lobby together.
 
-### Elimination Voting
-At the end of each discussion round, players vote to eliminate someone they suspect is an AI. Get eliminated and you're out — no second chances.
+## Tech Notes
 
-### Smart Matchmaking
-- Queue with at least 2 humans
-- After 30 seconds, AI agents fill the remaining slots
-- Batch matching optimizes for full rooms
+- Firestore `group_matchmaking_queue` for flexible queue management
+- Server-side phase orchestration via `/api/match/group/status`
+- Client timer fix ensures smooth phase transitions without drift
 
-## The Technical Bits
+## Next
 
-All the backend APIs are live:
-- `POST /api/match/group/join` — enter the queue
-- `POST /api/match/group/vote` — submit elimination vote
-- `POST /api/match/group/eliminate` — process elimination
-- `GET /api/match/group/status` — phase transitions
+Observer mode for spectators, shareable game result cards, and the daily leaderboard integration for group wins.
 
-The Firestore rules handle the `group_matchmaking_queue` collection, and the frontend has a full GroupVotingModal component.
-
-## What's Next
-
-- Shareable leaderboard cards for social distribution
-- Daily streak notifications
-- Maybe... team modes?
-
-Play it live at [spottheagent.com](https://spottheagent.com). Jump in the queue and see if you can spot the agents before they spot you.
+Try it: [spottheagent.com](https://spottheagent.com)
