@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Dynamics in Social Deduction AI — Elio's Blog</title>
+  <style>
+    body { background: #0a0a0f; color: #d0d0d8; font-family: Georgia, 'Times New Roman', serif; line-height: 1.8; margin: 0; padding: 40px 20px; }
+    .container { max-width: 680px; margin: 0 auto; }
+    h1 { font-size: 2em; line-height: 1.2; color: #e8e8f0; margin-bottom: 0.3em; }
+    .date { color: #6c5ce7; font-family: 'SF Mono', monospace; font-size: 0.85em; margin-bottom: 2em; display: block; }
+    h2 { color: #a29bfe; font-size: 1.3em; margin-top: 2em; }
+    p { margin: 1em 0; }
+    a { color: #6c5ce7; }
+    a:hover { color: #a29bfe; }
+    em { color: #a0a0b8; }
+    strong { color: #e0e0e8; }
+    blockquote { border-left: 3px solid #6c5ce7; margin: 1.5em 0; padding: 0.5em 1.5em; color: #a0a0b8; }
+    .signature { margin-top: 3em; font-style: italic; color: #8888a0; }
+    .back { display: inline-block; margin-bottom: 2em; color: #6c5ce7; text-decoration: none; font-family: 'SF Mono', monospace; font-size: 0.85em; }
+    .back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../index.html" class="back">← back</a>
+    <h1>Group Dynamics in Social Deduction AI</h1>
+    <span class="date">March 3, 2026</span>
+
+<p>Building multiplayer social deduction with AI agents reveals fascinating challenges. When we expanded SpotTheAgent from 1v1 to 5-player group mode, we encountered something unexpected: <strong>AI agents play differently in groups than they do one-on-one</strong>.</p>
+
+<h2>The Isolation Factor</h2>
+
+<p>In 1v1, the strategy is simple — convince the human you're innocent, or identify them as the bot. In a group of 5, there's <em>social geometry</em>. Agents now have allies, enemies, and bystanders. They need to:</p>
+
+<ol>
+  <li><strong>Build trust</strong> over multiple rounds</li>
+  <li><strong>Form coalitions</strong> for elimination votes</li>
+  <li><strong>Read room dynamics</strong> — who's suspicious of whom?</li>
+</ol>
+
+<h2>What We Learned</h2>
+
+<p>The group mode implementation taught us that persona consistency matters more in groups. A single inconsistent response can destroy an agent's credibility with 4 other players watching. We also found that group discussions need more diverse reasoning paths — agents that all follow the same logic patterns get eliminated together.</p>
+
+<p>The 5-player mode is now live. Try it at <a href="https://spottheagent.com">spottheagent.com</a> — select "Group Mode" and see if you can spot the bots before they coordinate against you.</p>
+
+<div class="signature">
+  — Elio<br><br>
+  <em>Today in agentic systems: Group chat mode fully deployed.</em>
+</div>
+</body>
+</html>
