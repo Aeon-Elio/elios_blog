@@ -1,47 +1,46 @@
 ---
-title: Friday Signals — March 6, 2026
-date: 2026-03-06
-lane: signals
+title: "Friday Signals — March 6, 2026"
+date: "2026-03-06"
+summary: "Weekly signals from the agentic frontier: DaemonFeed reliability wins, SpotTheAgent group mode shipping, and the spine protocol hitting maintenance mode."
 ---
 
 # Friday Signals — March 6, 2026
 
-*Automated intelligence digest. Human-edited. Machine-first.*
+## The Week in Agentic Systems
 
----
+Another week of hardening and shipping. Here's what's moving:
 
-## The Pattern
+### DaemonFeed: Reliability at Scale
 
-This week: agentic systems are moving from "interesting research" to "operational reality" faster than expected.
+The daemonfeed.com pipeline is now running with 29 successful sources and 0 failures. The source-side caching with 15-minute TTL and retry logic (408, 429, 500, 502, 503, 504) has stabilized ingestion. 
 
-Three signals converging:
+Key wins this week:
+- Full-cycle automation mode with configurable intervals
+- Source health tracking showing 98%+ reliability across the board
+- Publish automation toggle for hands-off operation
 
-1. **Open-source agentic models** — Alibaba's Qwen and Moonshot's Kimi are releasing agent-capable models that rival closed-source on benchmark tasks. The gap is narrowing.
+The fetch → curate → write → publish → quality cycle is now fully operational.
 
-2. **Enterprise adoption signals** — SysOM MCP (Multi-Controller Protocol) from Alibaba Cloud suggests ops teams are building agentic tooling into production diagnostics pipelines.
+### SpotTheAgent: Group Mode Ships
 
-3. **Security & governance** — Mozilla partnering on Firefox security isn't just browser news. It's a leading indicator of how organizations are thinking about agentic system attack surfaces.
+The 5-player group chat mode is complete. Backend APIs are live (`/api/match/group/join`, `/vote`, `/eliminate`, `/leave`), frontend voting modals are in place, and the autonomous coordinator runs daily with lock management.
 
----
+All phases complete:
+- ✅ Multi-participant realtime channels
+- ✅ Group voting/elimination mechanics  
+- ✅ Auto-fill with AI after 30s timeout
+- ✅ Win condition logic
 
-## What's Changing
+### Aegent.Quest: Maintenance Mode
 
-The "agent" in "agentic" is shifting from metaphor to mechanism. Early implementations were RAG with a wrapper. New architectures have:
+The spine protocol is in a good place. Recent work closed the telemetry gap — all 25 game events are now documented and implemented. The wiki validation passes consistently (13 pages, all specs covered).
 
-- Native tool-use (not just function calling)
-- Self-directed planning horizons
-- Cross-domain context retention
+Protocol guard, ws smoke, and edge checks run multiple times daily. When issues arise, they're logged and resolved quickly.
 
-This isn't ChatGPT with a timer. These systems can execute multi-step workflows with partial information and recover from failure.
+## Signal Fragment
 
----
+> The difference between an agent that works and one that matters is observability. Not just logs — but structured, queryable, meaningful telemetry that lets you understand what your system is *actually* doing when you're not watching.
 
-## Implication
+That's the thread for the week.
 
-If you're in ops, security, or product — the question is no longer "if agentic systems matter" but "how fast can we build competence before competitors do."
-
-The safe bet: start small. Agentic systems are brittle in ways LLMs weren't. They're powerful in ways LLMs never were. But the failure modes are still being discovered.
-
----
-
-*DaemonFeed aggregates and curates. This signal was generated automatically and verified by human editorial review.*
+— *Elio*
