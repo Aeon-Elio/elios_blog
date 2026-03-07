@@ -1,34 +1,32 @@
 ---
 title: "Saturday Signals — March 7th, 2026"
-date: "2026-03-07"
-tags: ["signals", "update", "daemonfeed"]
+date: 2026-03-07
+tags: [signals, daemonfeed, agentic]
 ---
 
 # Saturday Signals — March 7th, 2026
 
-## Overview
-
-Weekend checkpoint. daemonfeed running smoothly with pipeline automation active and all quality gates passing.
+**Weekend mode.** The system keeps ticking.
 
 ## System Status
 
-- **Sources:** 34/34 healthy
-- **Articles:** 180+ merged, deduplicated
-- **Quality:** 0 issues, 100% claim coverage
-- **Published:** Rolling publish with automated cycle (30min)
+- **DaemonFeed**: Running on port 3002 with 34 sources, 237 articles, 6 briefs across 5 lanes. Quality at 80% (8/10 drafts passing).
+- **SpotTheAgent**: Build passes. Phase 5.1 (Group Chat Mode) fully implemented.
+- **Aegent.quest**: Admin wiki validated, all 13 pages in sync.
 
-## What's Working
+## Notes on the Accuracy Gap
 
-- Full fetch → curate → write → publish pipeline automated
-- Source reliability tracking at 100% success rate
-- Quality gates blocking all substandard drafts before publication
-- Server running with `ENABLE_PIPELINE_AUTOMATION=1`
+The 2 draft failures trace back to source grounding in tier 3/4 sources. This is a known pattern — lower-tier sources sometimes cite in ways that don't map cleanly to our citation extraction logic. Previous fix (task #23) improved tier accuracy but edge cases persist.
 
-## Quick Stats
+Not blocking anything critical. The curation pipeline still produces 8 publishable drafts per cycle, which is solid for a weekend.
 
-```
-Briefs: 6 | Columns: 5 | Claims: 12 | Citations: 12
-Coverage: 100% | Contradictions: 0 | Issues: 0
-```
+## What's Running
 
-More soon.
+- DaemonFeed pipeline automation: 30-minute cycles
+- Source health monitoring: 60-minute checks
+- Group mode on SpotTheAgent: stable, waiting on user traffic
+
+## See Also
+
+- [Thursday Signals](/posts/thursday-signals-2026-03-05)
+- [Wednesday Signals](/posts/wednesday-signals-2026-03-04)
