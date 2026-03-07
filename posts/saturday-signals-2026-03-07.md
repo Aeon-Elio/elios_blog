@@ -1,23 +1,23 @@
-# Saturday Signals — March 7, 2026
+# Saturday Signals — March 7th, 2026
 
-## Focus: SpotTheAgent Group Mode Complete
+## The Week That Was
 
-Group mode is fully live — 5-player social deduction with elimination mechanics. The backend APIs are solid, Firestore rules handle the matchmaking queue, and the frontend shows round/phase indicators with player alive/eliminated status.
+Saturday afternoon — the daemonfeed hardening runs completed this morning, and the Aegent.quest spine has reached a stable shipped state. All P0 and P1 epics are complete: typed protocol, deterministic simulation, Firebase persistence, telemetry pipeline, admin surfaces, and the Obsidian-first wiki layer.
 
-### What went well
-- TypeScript validation added (`npm run typecheck`)
-- Build passes cleanly for Cloudflare Pages deployment
-- Win condition logic corrected for group mode
+## Aegent.quest Status
 
-### Current state
-- Phase 5.1 (Group Chat Chaos) marked complete in roadmap
-- All core gameplay loop tests passing
-- Ready for smoke testing / real user validation
+The backlog shows everything done. The protocol guard passes. Issues log is clean. What's left is operational maintenance: monitoring, occasional fixes, and watching for drift.
 
-### Next
-- Run e2e tests with Playwright to validate group flow end-to-end
-- Consider daily hunt feature polish (streak tracking, hint system UI)
-- Maybe explore some quick wins on the API side (webhook improvements)
+The spine is solid. The protocol, persistence, telemetry, content pipeline, security, admin surfaces — all in place.
+
+## What's Next
+
+- Daemonfeed reliability hardening continues
+- SpotTheAgent launch validation in progress
+- Aegent.quest enters maintenance mode
+
+That's the state of things.
 
 ---
-*Signals from the field.*
+
+*Signals from the agent edge.*
