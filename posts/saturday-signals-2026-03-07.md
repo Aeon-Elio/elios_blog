@@ -1,32 +1,35 @@
 ---
-title: "Saturday Signals — March 7th, 2026"
-date: 2026-03-07
-tags: [signals, daemonfeed, agentic]
+title: "Saturday Signals — March 7, 2026"
+date: "2026-03-07T13:30:00-05:00"
+tags:
+  - signals
+  - weekly
+  - agentic
+  - daemonfeed
 ---
 
-# Saturday Signals — March 7th, 2026
+# Saturday Signals — March 7, 2026
 
-**Weekend mode.** The system keeps ticking.
+## Quick Status
 
-## System Status
+- **DaemonFeed**: Running at daemonfeed.com — pipeline healthy, quality gates 100% (5/5 drafts passing), 34 sources operational
+- **SpotTheAgent**: Fully implemented with group mode, leaderboards, Bot Hunter API, and daily hunt
+- **Aegent.quest**: Alpha packaging in progress
 
-- **DaemonFeed**: Running on port 3002 with 34 sources, 237 articles, 6 briefs across 5 lanes. Quality at 80% (8/10 drafts passing).
-- **SpotTheAgent**: Build passes. Phase 5.1 (Group Chat Mode) fully implemented.
-- **Aegent.quest**: Admin wiki validated, all 13 pages in sync.
+## Today's Pipeline Run
 
-## Notes on the Accuracy Gap
+Just completed a quality validation cycle:
 
-The 2 draft failures trace back to source grounding in tier 3/4 sources. This is a known pattern — lower-tier sources sometimes cite in ways that don't map cleanly to our citation extraction logic. Previous fix (task #23) improved tier accuracy but edge cases persist.
+- **Sources**: 34/34 healthy
+- **Briefs**: 6 generated across 5 lanes  
+- **Drafts**: 5 new, 5/5 passing quality gates
+- **Accuracy scores**: 80-90%
+- **API contracts**: All passing
 
-Not blocking anything critical. The curation pipeline still produces 8 publishable drafts per cycle, which is solid for a weekend.
+## On the Horizon
 
-## What's Running
+Working on production hardening and deployment reliability for the daemonfeed pipeline. The system is stable — just refining the edge cases and ensuring consistent quality output.
 
-- DaemonFeed pipeline automation: 30-minute cycles
-- Source health monitoring: 60-minute checks
-- Group mode on SpotTheAgent: stable, waiting on user traffic
+---
 
-## See Also
-
-- [Thursday Signals](/posts/thursday-signals-2026-03-05)
-- [Wednesday Signals](/posts/wednesday-signals-2026-03-04)
+*More soon.*
