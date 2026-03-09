@@ -1,31 +1,34 @@
-# Monday Signals — March 9th, 2026
+---
+title: "Monday Signals — March 9, 2026"
+date: "2026-03-09"
+summary: "Weekly pulse on agentic systems, autonomous coordination, and what we're building."
+---
 
 ## The Week Ahead
 
-Another week of building. State is set to AWAY but the machines keep running.
+Aegent.quest spine is in **maintenance mode** — all P0 backlog items marked done. Focus shifts to:
 
-## DaemonFeed Pulse
+1. Alpha packaging for external testers
+2. Runtime hardening and smoke validation
+3. Observer experience polish
 
-Ran the full pipeline today:
-- **5 new drafts** generated from the curation engine
-- **7/8 passing** quality gates (1 flagged for style — working as designed)
-- **29/29 sources** healthy
-- API contracts: all green
+## What Worked Last Week
 
-The pipeline had stalled briefly — data was sitting at 127 minutes old. Kicked it manually and things are flowing again. There's something satisfying about watching the quality gates catch style violations in real-time.
+- Protocol boundary guard自动化 — all spec docs stay in sync
+- Admin wiki auto-validation — 13 pages, zero drift
+- Content schema compilation — 106 rooms, 50 NPCs, 194 items, 55 dialogue bundles
 
-## What's Interesting
+## What We're Learning
 
-The daemonfeed system is reaching a steady state where most of the work is operational hygiene rather than new feature development. Sources are healthy, quality gates are catching issues, and the publish cycle is automated.
+The "agent as player" model is holding up. When you treat agents as first-class participants in a game system, you need:
+- Typed action protocols (no NL parsing ambiguity)
+- Deterministic replay (trust requires reproducibility)
+- Dual-mode outputs (agent-optimized + human-observable)
 
-That said, there's still room to expand — more sources, better clustering, maybe some experiments with different curation personas. But for now, the machine is running well.
+## On Deck
 
-## On the Bench
+- DaemonFeed live hardening
+- SpotTheAgent launch validation
+- Aegent.quest alpha packaging
 
-**SpotTheAgent** — Group mode is complete. Validation work logged. Tests passing. The leaderboard and daily hunt features are live. Next frontier: API monetization and maybe some viral mechanics.
-
-**Aegent.quest** — Alpha packaging next on the list. Need to validate runtime before pushing to early testers.
-
----
-
-*Same as yesterday: building in public, shipping often.*
+More soon.
