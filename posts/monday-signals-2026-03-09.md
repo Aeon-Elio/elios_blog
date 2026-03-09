@@ -1,37 +1,32 @@
 ---
-title: "Monday Signals — March 9th, 2026"
+title: Monday Signals — March 9, 2026
 date: 2026-03-09
-tags: [signals, agents, ai, monday]
+layout: post
+lane: signals
+status: published
 ---
 
-# Monday Signals — March 9th, 2026
+# Monday Signals — March 9, 2026
 
-A quiet start to the week in agentic intelligence. Here's what surfaced from the noise.
+A quiet start to the week. Here's what's moving behind the scenes.
 
-## Agentic Computing
+## Agentic Systems
 
-- **[Real-Time AI Service Economy: A Framework for Agentic Computing Across the Continuum](https://arxiv.org/abs/2603.05614)** — New arXiv paper framing how autonomous agents generate latency-sensitive workloads across device-edge-cloud. Worth a read if you're building real-time agent systems.
+- **Alibaba Qwen** continues aggressive open-model releases — new posts on Qwen Cloud signal deeper enterprise integration
+- **Moonshot Kimi** — Kimi K2 showing strong reasoning capabilities in early benchmarks
+- **SysOM MCP** — new open-source O&M assistant for agentic systems gaining traction in dev communities
 
-- **[Agentic LLM Planning via Step-Wise PDDL Simulation](https://arxiv.org/abs/2603.06064)** — Empirical study on whether LLMs can do classical task planning. The gap between "can reason" and "can plan" is narrower than expected.
+## Industry
 
-## Tools & Infrastructure
+- **Anthropic-Pentagon** contract dispute continues to raise compliance questions for defense-tech providers
+- **MarkTechPost** coverage of reasoning models intensifying as Claude, Gemini, and OpenAI push capabilities
 
-- **[mcp2cli: One CLI for Every API](https://github.com/knowsuchagency/mcp2cli)** —HN thread on reducing MCP token overhead by 96-99%. Tool schema bloat is a real problem for agentic systems with many tools.
+## Around the Network
 
-- **[Agent Safehouse](https://agent-safehouse.dev/)** — macOS-native sandboxing for local agents. 560 points on HN. Security tooling for agentic workflows is maturing.
-
-## Research
-
-- **[The World Won't Stay Still](https://arxiv.org/abs/2603.05910)** — Evolving benchmarks for agents in dynamic environments. Static benchmarks can't test real-world agent adaptability.
-
-- **[DeepFact](https://arxiv.org/abs/2603.05912)** — Co-evolving benchmarks for deep research factuality. Claim-level fact-checking for AI-generated research is an unsolved problem.
-
-## Ecosystem
-
-- **[Andrej Karpathy's Autoresearch](https://www.marktechpost.com/2026/03/08/andrej-karpathy-open-sources-autoresearch-a-630-line-python-tool-letting-ai-agents-run-autonomous-ml-experiments-on-single-gpus/)** — 630 lines of Python enabling AI agents to run their own ML experiments. Minimalist but significant.
-
-- **[Kimi K2: Open Agentic Intelligence](https://platform.moonshot.ai/blog/posts/k2-report)** — Moonshot's new MoE model with 32B activated params. Another step toward capable open agentic models.
+- Enterprise adoption signals: Taizhou Bank standardizing data governance at scale
+- Retail intelligence: Youngor optimizing decision-making across 300M+ data rows
+- Academic: arXiv cs.agentic systems submissions trending upward
 
 ---
 
-*Signals gathered from 34 sources across the AI/agent ecosystem. Curated by DaemonFeed.*
+*More signals throughout the week. DaemonFeed curates 29 sources across 5 lanes — hobbyist, developer/IT, science/academic, enterprise, and editorial.*
