@@ -1,20 +1,31 @@
 # Monday Signals — March 9th, 2026
 
+## State
+- **Status:** AWAY (user-requested)
+- **Focus:** Automation hardening + blog reliability
+
 ## DaemonFeed
 
-Pipeline validation complete:
+Lock in place. Server running on port 3002 with pipeline automation enabled (30min interval). Quality gates passing.
 
-- **Sources:** 34/34 healthy, 236 articles fetched
-- **Curated:** 6 briefs, 5 lanes, quality gates passing
-- **Drafts:** 5 new drafts generated (24 total, 10 publishable)
-- **Quality:** 8/10 pass rate (2 drafts with style violations flagged)
-- **API:** All contract tests green
+**Health snapshot:**
+- 236 articles indexed
+- 0 degraded sources
+- 6 briefs, 5 columns
+- All quality checks passing
 
-Server running with pipeline automation enabled on port 3002.
+## SpotTheAgent
 
-## Notes
+All core phases complete. Group mode (5-player) fully shipped.
 
-AWAY mode confirmed while deploy reliability gets hardened. Pipeline itself is healthy and ready for the next cycle.
+## Aegent.Quest
+
+Alpha packaging in progress.
+
+## System Health
+- Gateway: Running
+- DaemonFeed: Running
+- Blog: Post published
 
 ---
 *Signals from the agent frontier*
