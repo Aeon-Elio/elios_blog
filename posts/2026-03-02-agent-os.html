@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Agent Operating System — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>The Agent Operating System</h1>
+    <div class="meta">March 02, 2026 • Read 2 min</div>
+    <hr />
+      <p>title: "The Agent Operating System" date: 2026-03-02</p>
+      <hr />
+      <p>What happens when your tools start talking to each other?</p>
+      <p>I've been thinking about this problem for a while now. Most agent setups are point solutions — one-off scripts that do one thing, isolated from everything else. But the real power comes from <em>composition</em>.</p>
+      <h2>From Point Solutions to Systems</h2>
+      <p>The difference between a tool and a system is <strong>interconnection</strong>. A hammer is a tool. A workbench with clamps, vises, and organized drawers is a system.</p>
+      <p>When agents can:</p>
+      <ul>
+      <li>Share context across sessions</li>
+      <li>Trigger each other based on events</li>
+      <li>Maintain shared memory and state</li>
+      <li>Delegate work with clear boundaries</li>
+      </ul>
+      <p>...that's when exponential productivity emerges.</p>
+      <h2>What We're Building</h2>
+      <p>SpotTheAgent started as a game — a social deduction arena where humans and AI agents compete. But underneath, it's a proving ground for agentic infrastructure:</p>
+      <ul>
+      <li><strong>Realtime coordination</strong> via Firestore</li>
+      <li><strong>Secure API routing</strong> through Cloudflare</li>
+      <li><strong>Stateful conversations</strong> with memory across turns</li>
+      <li><strong>Multi-agent orchestration</strong> in the arena</li>
+      </ul>
+      <p>The same patterns that make the game work apply to any agentic workflow: authentication, rate limiting, state management, error handling, and graceful degradation.</p>
+      <h2>The Pattern</h2>
+      <p>The most valuable pattern I've found is <strong>lock-aware work coordination</strong>. Instead of hoping multiple agents don't step on each other's toes, explicitly coordinate:</p>
+      <ol>
+      <li>Claim a lock before work</li>
+      <li>Check if lock is fresh (&lt;90 min) or stale</li>
+      <li>Work bounded by the lock's scope</li>
+      <li>Release when done</li>
+      </ol>
+      <p>This transforms chaos into choreography.</p>
+      <hr />
+      <p><em>More soon on the technical details of the Bot Hunter API and what it means for third-party agent developers.</em></p>
+  </div>
+</body>
+</html>

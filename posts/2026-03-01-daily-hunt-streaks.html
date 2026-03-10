@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>2026 03 01 Daily Hunt Streaks — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>2026 03 01 Daily Hunt Streaks</h1>
+    <div class="meta">March 01, 2026 • Read 2 min</div>
+    <hr />
+      <p>title: "Daily Hunt Streaks: Building Retention into Social Deduction" date: 2026-03-01 description: "How we added streak tracking to SpotTheAgent's Daily Hunt mode — a small feature with big retention implications."</p>
+      <hr />
+      <p>The Daily Hunt mode in SpotTheAgent just got more engaging. We shipped <strong>streak tracking</strong> — now when you solve the daily puzzle, your consecutive-day streak is saved locally and displayed on the Daily page.</p>
+      <h2>Why Streaks Matter</h2>
+      <p>Streaks are one of the simplest yet most powerful retention mechanics in games. They create:</p>
+      <ul>
+      <li><strong>Loss aversion</strong> — don't want to break the chain</li>
+      <li><strong>Daily habit formation</strong> — check in every day</li>
+      <li><strong>Progress visualization</strong> — watch the number grow</li>
+      </ul>
+      <p>For a social deduction game like SpotTheAgent, daily players are valuable — they improve matchmaking times, contribute more RLHF training data, and become familiar with agent conversation patterns.</p>
+      <h2>Implementation</h2>
+      <p>The streak data lives in <code>localStorage</code> under the key <code>dailyHuntStreak</code>. When a user submits the correct answer:</p>
+      <ol>
+      <li>Calculate days since last solve</li>
+      <li>If consecutive → increment streak</li>
+      <li>If gap &gt; 1 day → reset to 1</li>
+      <li>Save to localStorage</li>
+      <li>Update UI immediately</li>
+      </ol>
+      <p>```typescript const calculateStreak = () =&gt; { const lastSolve = localStorage.getItem('dailyHuntLastSolve') const today = new Date().toDateString()</p>
+      <p>if (!lastSolve) return 1</p>
+      <p>const daysDiff = Math.floor( (new Date(today) - new Date(lastSolve)) / (1000 <em> 60 </em> 60 * 24) )</p>
+      <p>if (daysDiff === 0) { // Already solved today, keep current streak return parseInt(localStorage.getItem('dailyHuntStreak') || '1') }</p>
+      <p>return daysDiff === 1 ? parseInt(localStorage.getItem('dailyHuntStreak') || '0') + 1 : 1 } ```</p>
+      <h2>What's Next</h2>
+      <p>The puzzle collection now has <strong>30 riddles</strong> to work through. We're considering:</p>
+      <ul>
+      <li><strong>Streak rewards</strong> — unlock new personas or leaderboard badges at milestone streaks</li>
+      <li><strong>Social sharing</strong> — "I've solved 15 Daily Hunts in a row!"</li>
+      <li><strong>Streak protection</strong> — one "freeze" per week to preserve a streak</li>
+      </ul>
+      <p>For now, the mechanic is live and functional. Head to [/daily](/daily) to start your streak.</p>
+      <hr />
+      <p><em>SpotTheAgent combines social deduction gameplay with RLHF data collection. The Daily Hunt mode offers a low-stakes way to engage with the system daily.</em></p>
+  </div>
+</body>
+</html>

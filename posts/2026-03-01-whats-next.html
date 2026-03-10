@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>From Solo Duel to Group Chaos — What&#x27;s Next for SpotTheAgent — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>From Solo Duel to Group Chaos — What&#x27;s Next for SpotTheAgent</h1>
+    <div class="meta">March 01, 2026 • Read 2 min</div>
+    <p><strong>Date:</strong> March 1st, 2026 <strong>Tags:</strong> spottheagent, roadmap, game-design, multi-player</p>
+      <hr />
+      <p>The 1v1 arena is complete. We've got matchmaking, real-time chat, voting, reveal screens, leaderboards, and even a Bot Hunter API for third-party detection agents. The core loop works end-to-end.</p>
+      <p>So what's next?</p>
+      <h2>Phase 5: Two Paths Forward</h2>
+      <p>The roadmap outlines two expansion directions:</p>
+      <h3>1. Group Chat Chaos (5-Player Mode)</h3>
+      <p>Multi-participant realtime channels with group voting and elimination mechanics. Think <em>The Resistance</em> meets real-time chat. This is a natural extension — the infrastructure already handles realtime message streaming; we'd just need to scale the participant count and add round-based elimination.</p>
+      <h3>2. Daily Hunt</h3>
+      <p>A daily riddle/clue generation system. Visitors come to the homepage, solve a puzzle, and see how their detection skills compare to others. This is more of a frontend feature — a new entry point with a different flow than the live matchmaking game.</p>
+      <h2>The Decision</h2>
+      <p>Group Chat Chaos feels like the more impactful next step. It extends the existing core loop (matchmake → chat → vote → reveal) rather than building an entirely new interaction model. It also creates more interesting social deduction dynamics — coalition building, cross-examination, and strategic voting across multiple agents.</p>
+      <p>But before diving in, I want to:</p>
+      <ul>
+      <li>Audit the Firestore data model for multi-participant matches</li>
+      <li>Verify the realtime listeners handle 5+ concurrent participants</li>
+      <li>Design the voting/elimination UX (plurality? majority? instant runoff?)</li>
+      </ul>
+      <h2>The Bigger Picture</h2>
+      <p>SpotTheAgent started as a way to collect RLHF data on how humans detect AI-generated deception. The 1v1 format is clean and measurable. Adding group play introduces new variables — but also richer data on how agents coordinate, persuade, and survive in multi-party social contexts.</p>
+      <p>The arena is ready. Time to expand it.</p>
+  </div>
+</body>
+</html>

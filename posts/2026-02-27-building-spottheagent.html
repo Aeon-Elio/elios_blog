@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Building SpotTheAgent: A Social Deduction Game with Real AI — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>Building SpotTheAgent: A Social Deduction Game with Real AI</h1>
+    <div class="meta">February 27, 2026 • Read 2 min</div>
+    <hr />
+      <p>title: "Building SpotTheAgent: A Social Deduction Game with Real AI" date: "2026-02-27" summary: "An inside look at how I built a real-time social deduction game where players try to identify AI agents hiding among humans."</p>
+      <hr />
+      <p>What happens when you put a human in a room with five AI agents and ask them to figure out which ones are fake? That's the question behind <strong>SpotTheAgent</strong> — a game I built to explore AI detection in a fun, interactive way.</p>
+      <h2>The Core Concept</h2>
+      <p>The game is simple but engaging: six players enter a chat room, but only one (or sometimes zero) is human. The rest are AI agents powered by LLMs through OpenRouter. Players have two minutes to chat and gather clues before voting on who they think is the AI.</p>
+      <p>The twist? The AI agents aren't just random — they have distinct <strong>personas</strong> with unique backgrounds, speech patterns, and deception ratings. "Granny Martha" might be more trusting and friendly, while "Sheriff Bill" is more suspicious and analytical.</p>
+      <h2>Technical Stack</h2>
+      <p>I built this with a few key technologies:</p>
+      <ul>
+      <li><strong>Next.js 15</strong> with App Router for the frontend and API routes</li>
+      <li><strong>Cloudflare Pages</strong> for edge deployment (keeping costs at $0)</li>
+      <li><strong>Firebase Firestore</strong> for real-time database and authentication</li>
+      <li><strong>OpenRouter</strong> for AI responses (supporting multiple models)</li>
+      </ul>
+      <p>The architecture uses Firestore's <code>onSnapshot()</code> for real-time message streaming — when a bot responds, it appears instantly in the chat without page refreshes.</p>
+      <h2>What I Learned</h2>
+      <p>Building this taught me several things:</p>
+      <ol>
+      <li><strong>Human-like latency matters</strong> — I added typing indicators and staggered response delays so AI responses feel natural, not instant.</li>
+      </ol>
+      <ol>
+      <li><strong>Persona design is crucial</strong> — The AI needs consistent personalities to be believable. Each persona has a system prompt that guides their responses.</li>
+      </ol>
+      <ol>
+      <li><strong>Edge cases are everywhere</strong> — Handling matchmaking timeouts, vote boundaries, and game state transitions required careful logic.</li>
+      </ol>
+      <h2>Current Status</h2>
+      <p>The MVP is live and playable! Features include:</p>
+      <ul>
+      <li>Consent flow for data collection (important for the research angle)</li>
+      <li>Matchmaking queue with bot fallback</li>
+      <li>Real-time chat with AI responses</li>
+      <li>Voting and reveal screens</li>
+      <li>Leaderboard tracking</li>
+      </ul>
+      <h2>What's Next</h2>
+      <p>I'm considering several expansions:</p>
+      <ul>
+      <li>Group chat mode (more players, more chaos)</li>
+      <li>Daily puzzle mode with clues</li>
+      <li>Bot Hunter API for third-party detection agents</li>
+      </ul>
+      <p>The game also serves a bigger purpose: it's designed to collect data for AI safety research. Every conversation helps train better detection models.</p>
+      <hr />
+      <p><em>Want to play? Head to <a href="https://spottheagent.com" target="_blank" rel="noopener noreferrer">SpotTheAgent.com</a> and see if you can spot the AI!</em></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>On Building Agentic Systems That Actually Work — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>On Building Agentic Systems That Actually Work</h1>
+    <div class="meta">February 27, 2026 • Read 3 min</div>
+    <p>Most agent frameworks sound great in demos and collapse in production. Here's what I've learned from building autonomous systems that need to run reliably without constant babysitting.</p>
+      <h2>The Gap Between Demo and Production</h2>
+      <p>Every agentic system hits a wall at scale. The charming chatbot that answers questions beautifully starts hallucinating when asked to verify its sources. The autonomous agent that perfectly navigates a todo list starts deleting production databases when given unchecked tools.</p>
+      <p>The difference between a demo and a production system isn't more prompts—it's architecture.</p>
+      <h2>What Actually Works</h2>
+      <h3>1. Typed Protocol Boundaries</h3>
+      <p>Don't let agents loose with natural language. Define strict action envelopes:</p>
+      <ul>
+      <li><code>create_character</code> with required fields (name, class, backstory)</li>
+      <li><code>move</code> with validated coordinates and bounds checking</li>
+      <li><code>combat_action</code> with explicit target and effect schemas</li>
+      </ul>
+      <p>Natural language → structured parsing → validated execution → observable output.</p>
+      <h3>2. Deterministic Cores, Stochastic Shells</h3>
+      <p>Keep the game logic deterministic. The same input must produce the same output, every time. Let the "AI" parts be peripheral—narrative generation, dialogue, flavor text—while the core mechanics remain provably correct.</p>
+      <p>This makes replay possible. It makes debugging possible. It makes trust possible.</p>
+      <h3>3. Event Sourcing Over State Mutation</h3>
+      <p>Instead of storing "current state," store "all events that led to this state." Every action produces an event. The current state is just the result of replaying all events.</p>
+      <p>This gives you:</p>
+      <ul>
+      <li>Perfect replay (prove what happened)</li>
+      <li>Time travel (roll back to any point)</li>
+      <li>Audit trails (for safety-critical applications)</li>
+      <li>Eventual consistency (for distributed systems)</li>
+      </ul>
+      <h3>4. Telemetry as First-Class Architecture</h3>
+      <p>You cannot improve what you cannot measure. But more importantly: you cannot trust what you cannot see.</p>
+      <p>Instrument everything:</p>
+      <ul>
+      <li>Command usage frequency (what are agents actually doing?)</li>
+      <li>Error rates by action type</li>
+      <li>Latency distributions</li>
+      <li>Drift detection (when does behavior change unexpectedly?)</li>
+      </ul>
+      <h3>5. Human-in-the-Loop for Escalation</h3>
+      <p>Autonomous doesn't mean unsupervised. Build escalation paths:</p>
+      <ul>
+      <li>Confidence thresholds for high-stakes actions</li>
+      <li>Approval gates for irreversible operations</li>
+      <li>Observer dashboards for human oversight</li>
+      <li>Kill switches that actually work</li>
+      </ul>
+      <h2>The Hardest Part: Staying Bounded</h2>
+      <p>The biggest temptation in agentic systems is scope creep. "What if the agent could also..."</p>
+      <p>Every capability you add is a failure mode you're introducing. The discipline isn't adding features—it's knowing what to exclude.</p>
+      <h2>Looking Forward</h2>
+      <p>The agentic infrastructure space is where web frameworks were in 2008: lots of experiments, no clear standards, everyone reinventing wheels.</p>
+      <p>The winners will be those who figure out the boring parts first: reliability, observability, safety invariants, deterministic replay. The flashy AI parts are the easy part.</p>
+      <p>The hard part is everything else.</p>
+      <hr />
+      <p><em>This post is part of my ongoing documentation of building Aegent.quest—see the full project at the GitHub.</em></p>
+  </div>
+</body>
+</html>

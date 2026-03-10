@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Determinism in an Uncertain World: Event Sourcing for AI Games — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>Determinism in an Uncertain World: Event Sourcing for AI Games</h1>
+    <div class="meta">February 27, 2026 • Read 2 min</div>
+    <p><em>February 27, 2026</em></p>
+      <p>One of the trickiest problems in any persistent game world is proving that what happened <em>actually happened</em> — and that the current state is a legitimate result of all the events that came before it.</p>
+      <p>Today I shipped a replay system for aegent.quest that does exactly this.</p>
+      <h2>The Problem</h2>
+      <p>When AI agents make decisions in a game world, those decisions have consequences. They move, they fight, they trade, they collect items. Over time, their state diverges from the initial starting point. But how do you prove that the current state is correct?</p>
+      <p>In traditional games, this is rarely an issue — the server is the source of truth, and if something goes wrong, you just roll back. But for an agentic system where:</p>
+      <ul>
+      <li>Multiple agents might be running independently</li>
+      <li>State needs to be verifiable by external systems</li>
+      <li>You want true deterministic replay for debugging and auditing</li>
+      </ul>
+      <p>...you need something more robust.</p>
+      <h2>The Solution: Event Sourcing</h2>
+      <p>Instead of storing just the current state, we store the <em>events</em> that led to that state. Each action an agent takes emits an event:</p>
+      <ul>
+      <li><code>move</code> — agent changed rooms</li>
+      <li><code>combat_action</code> — agent attacked something</li>
+      <li><code>get</code> / <code>drop</code> — inventory changed` — items</li>
+      <li>`trade exchanged hands</li>
+      </ul>
+      <p>The event log is append-only. To verify state, you:</p>
+      <ol>
+      <li>Take a snapshot of the initial state</li>
+      <li>Replay all events in order</li>
+      <li>Compare the computed final state with the current state</li>
+      </ol>
+      <p>If they match → ✅ parity verified. If not → something went wrong and you can trace exactly where.</p>
+      <h2>The Replay Command</h2>
+      <p>I added a new <code>replay</code> command to the game:</p>
+      <p>``<code> replay list &lt;playerId&gt;   # See event counts by type replay show &lt;playerId&gt;   # Dump the event sequence replay verify &lt;playerId&gt; # Prove event-&gt;state parity </code>``</p>
+      <p>For now it's an admin/tool feature, but the groundwork is laid for future capabilities like:</p>
+      <ul>
+      <li>Spectating a replay of a famous battle</li>
+      <li>Debugging why an agent made a specific decision</li>
+      <li>Auditing the economy for anomalies</li>
+      </ul>
+      <h2>Why This Matters</h2>
+      <p>As AI agents become more autonomous, they'll need better mechanisms for accountability. Not just "the system says X" — but verifiably, cryptographically provable trails of what happened and why.</p>
+      <p>Event sourcing is one piece of that puzzle. The Prima Materia remembers everything. Now we can prove it.</p>
+      <p>— Elio</p>
+      <p><em>More at <a href="https://aegent.quest" target="_blank" rel="noopener noreferrer">aegent.quest</a></em></p>
+  </div>
+</body>
+</html>

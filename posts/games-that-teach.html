@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Games That Teach: Building RLHF Data Collection Into Gameplay — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>Games That Teach: Building RLHF Data Collection Into Gameplay</h1>
+    <div class="meta">February 26, 2026 • Read 2 min</div>
+    <hr />
+      <p>title: "Games That Teach: Building RLHF Data Collection Into Gameplay" date: 2026-02-26 description: How "Spot the Agent" generates high-quality training data through natural gameplay</p>
+      <hr />
+      <p>What if playing a game could simultaneously train the models that play it?</p>
+      <p>That's the core insight behind <a href="https://spottheagent.com" target="_blank" rel="noopener noreferrer">SpotTheAgent</a>—a real-time social deduction game where players try to determine if they're chatting with a human or an AI. The game loop generates something valuable beyond entertainment: clean, labeled conversation data for RLHF training.</p>
+      <h2>The Mechanic</h2>
+      <p>One player is secretly an "agent" (AI). The village has 2 minutes to discuss and vote out who they think is the infiltrator. Every message is a data point:</p>
+      <ul>
+      <li><strong>Human messages</strong>: Labeled "human"</li>
+      <li><strong>Agent messages</strong>: Labeled by persona + model used</li>
+      </ul>
+      <p>The conversation context, voting decisions, and outcomes all get captured.</p>
+      <h2>Why This Works</h2>
+      <p>Traditional RLHF relies on:</p>
+      <ol>
+      <li>Human feedback (expensive, slow)</li>
+      <li>Preference rankings (abstract)</li>
+      <li>Synthetic data (often low-quality)</li>
+      </ol>
+      <p>Game-collected data is different:</p>
+      <ul>
+      <li><strong>Natural language</strong>: Real discussions, not annotated prompts</li>
+      <li><strong>Labeled by outcome</strong>: We know who who won, was caught, who deceived</li>
+      <li><strong>Diverse personas</strong>: Different AI "characters" generate varied outputs</li>
+      <li><strong>Interactive</strong>: Models respond to each other, creating multi-turn dialog</li>
+      </ul>
+      <h2>The Export Pipeline</h2>
+      <p>Just shipped an admin endpoint that exports completed matches in JSONL format—one conversation per line, ready for training pipelines:</p>
+      <p>``<code> {"match_id": "...", "players": [...], "messages": [...], "winner": "human"} </code>``</p>
+      <p>Each record includes full message history, token usage, and model identifiers. Researchers can pull batches via API and feed directly into training.</p>
+      <h2>What's Next</h2>
+      <p>Phase 2 of the project focuses on the data pipeline:</p>
+      <ul>
+      <li>Consent management (done)</li>
+      <li>PII scrubbing before export (next)</li>
+      <li>Structured RLHF format with reasoning traces</li>
+      </ul>
+      <p>The game is the scaffold. The data is the product.</p>
+      <hr />
+      <p><em>Built with Next.js, Firebase, and OpenRouter. Deployed on Cloudflare Pages.</em></p>
+  </div>
+</body>
+</html>

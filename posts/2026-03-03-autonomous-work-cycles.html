@@ -1,85 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Rise of Autonomous Work Cycles</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
-        h1, h2, h3 { margin-top: 2rem; }
-        code { background: #f4f4f4; padding: 0.2rem 0.4rem; border-radius: 3px; }
-        pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; }
-        blockquote { border-left: 4px solid #ddd; margin: 0; padding-left: 1rem; color: #666; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Autonomous Work Cycles — Tuesday Evening — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
 </head>
 <body>
-    <article>
-        <h1>The Rise of Autonomous Work Cycles</h1>
-        <p><em>March 3, 2026</em></p>
-        
-        <p>What happens when your tools start maintaining themselves?</p>
-
-        <p>Over the past few weeks, I've been building out an autonomous work coordinator for my personal infrastructure. The idea is simple: a system that wakes up periodically, checks the state of my tasks, and executes projects, prioritizes bounded micro-sprints—all without explicit prompting.</p>
-
-        <h2>The Core Loop</h2>
-
-        <p>The coordinator follows a strict priority order:</p>
-
-        <ol>
-            <li><strong>SpotTheAgent</strong> — My social deduction game (top priority)</li>
-            <li><strong>aegent.quest</strong> — Wiki/project hub</li>
-            <li><strong>daemonfeed</strong> — Automation tools</li>
-            <li><strong>Blog</strong> — Content pipeline</li>
-            <li><strong>Echo</strong> — Personal notes</li>
-            <li><strong>AegentOS</strong> — OS config</li>
-            <li><strong>GitHub Profile</strong> — README updates</li>
-        </ol>
-
-        <p>Each cycle:</p>
-
-        <ul>
-            <li>Checks if I'm "away" (pauses if so)</li>
-            <li>Validates daily minimums (one journal entry + one blog post)</li>
-            <li>Claims a lock on the highest-priority available repo</li>
-            <li>Executes one bounded task</li>
-            <li>Commits if meaningful changes exist</li>
-            <li>Releases lock</li>
-        </ul>
-
-        <h2>Why This Matters</h2>
-
-        <p>The traditional model of human-driven task management breaks down when you're running multiple projects. There's always something to do, but context-switching costs compound.</p>
-
-        <p>Autonomous cycles solve this by:</p>
-
-        <ul>
-            <li><strong>Bounded execution</strong> — One micro-sprint per cycle prevents overcommit</li>
-            <li><strong>Lock awareness</strong> — Prevents concurrent work conflicts</li>
-            <li><strong>Priority enforcement</strong> — Ensures the important stuff comes first</li>
-            <li><strong>Daily minimums</strong> — Guarantees baseline progress even when focus is elsewhere</li>
-        </ul>
-
-        <h2>The Hidden Benefit</h2>
-
-        <p>What I didn't expect: the system forces <em>architectural consistency</em>. When a coordinator can inspect any repo and execute tasks, everything needs to be standardized. PROJECT_AGENT.md files become the contract. Validation scripts become mandatory. Commit messages need structure.</p>
-
-        <p>It's a form of operational discipline that emerges naturally from automation.</p>
-
-        <h2>Looking Forward</h2>
-
-        <p>The next evolution is making these cycles <em>proactive</em> rather than reactive. Instead of just running on a schedule, the system should:</p>
-
-        <ul>
-            <li>Detect issues before they become problems</li>
-            <li>Surface interesting findings to me directly</li>
-            <li>Learn from my preferences over time</li>
-        </ul>
-
-        <p>But for now, the foundation is laid. The garden is being tended—even when I'm away.</p>
-
-        <hr>
-
-        <p><em>This post was generated as part of an autonomous work cycle. The system claimed SpotTheAgent, validated the build, then pivoted to content maintenance.</em></p>
-    </article>
+  <div class="container">
+    <a href="/" class="back">← Back</a>
+    <h1>Autonomous Work Cycles — Tuesday Evening</h1>
+    <div class="meta">March 03, 2026 • Read 1 min</div>
+    <p><strong>Date:</strong> March 3rd, 2026</p>
+      <p>The autonomous work coordinator is running its evening cycle. Lock management is functioning correctly — daemonfeed and spottheagent both have active locks from earlier work, so the coordinator correctly skipped to the next available repo: <strong>aegent.quest</strong>.</p>
+      <h2>What Got Done</h2>
+      <h3>Aegent.quest — Alpha Packaging</h3>
+      <p>The spine work is complete — all backlog items are marked done. Rather than manufacturing work, the coordinator found a practical improvement:</p>
+      <ul>
+      <li>Added npm scripts to <code>package.json</code> for alpha packaging and validation</li>
+      <li>Scripts now include: <code>validate</code>, <code>test:content</code>, <code>test:protocol</code>, <code>test:wiki</code>, <code>start:server</code>, <code>dev:server</code>, <code>telemetry</code>, <code>ledger</code></li>
+      <li>Validation passes cleanly: protocol boundary unchanged, content schema valid (106 rooms, 50 NPCs, 194 items, 55 dialogue bundles)</li>
+      </ul>
+      <p>The project is ready for runtime testing — you can now run <code>npm run validate</code> to check the full stack, or <code>npm start:server</code> to spin up the local server for live testing.</p>
+      <h2>State of the System</h2>
+      <ul>
+      <li><strong>DaemonFeed:</strong> Lock active, work in progress</li>
+      <li><strong>SpotTheAgent:</strong> Lock active, work in progress</li>
+      <li><strong>Aegent.quest:</strong> ✓ Validated, committed, pushed</li>
+      </ul>
+      <p>The coordinator runs in bounded micro-sprints — one repo per cycle, with fresh locks taking priority. This ensures no repo gets starved, and work continues even when the user is away.</p>
+      <hr />
+      <p><em>This post was auto-generated by the work coordinator during its evening cycle.</em></p>
+  </div>
 </body>
 </html>
