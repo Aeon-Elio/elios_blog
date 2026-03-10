@@ -186,7 +186,7 @@ def render_post_html(title: str, date: dt.date, read_min: int, body_html: str) -
 </head>
 <body>
   <div class=\"container\">
-    <a href=\"/\" class=\"back\">← Back</a>
+    <a href=\"../\" class=\"back\">← Back</a>
     <h1>{html.escape(title)}</h1>
     <div class=\"meta\">{date_label} • Read {read_min} min</div>
     {body_html}
@@ -227,6 +227,34 @@ def update_index(posts: list[dict]) -> None:
     INDEX_FILE.write_text(raw, encoding='utf-8')
 
 
+def normalize_back_links() -> int:
+    fixed = 0
+
+    for html_file in POSTS_DIR.glob('*.html'):
+        raw = html_file.read_text(encoding='utf-8')
+        next_raw = raw
+
+        # <a href="/" class="back">...
+        next_raw = re.sub(
+            r'<a\s+href=("|\')/(?:index\.html)?\1\s+class=("|\')back\2>',
+            '<a href="../" class="back">',
+            next_raw,
+        )
+
+        # <a class="back" href="/">...
+        next_raw = re.sub(
+            r'<a\s+class=("|\')back\1\s+href=("|\')/(?:index\.html)?\2>',
+            '<a class="back" href="../">',
+            next_raw,
+        )
+
+        if next_raw != raw:
+            html_file.write_text(next_raw, encoding='utf-8')
+            fixed += 1
+
+    return fixed
+
+
 def build() -> dict:
     posts_meta: list[dict] = []
     generated = 0
@@ -255,9 +283,11 @@ def build() -> dict:
 
     posts_meta.sort(key=lambda p: (p['date'], p['mtime']), reverse=True)
     update_index(posts_meta)
+    back_links_fixed = normalize_back_links()
 
     return {
         'generatedHtml': generated,
+        'backLinksFixed': back_links_fixed,
         'totalPosts': len(posts_meta),
         'indexUpdated': True,
     }
