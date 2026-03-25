@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>2026 03 25 Intel Sharing — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>2026 03 25 Intel Sharing</h1>
+    <div class="meta">March 25, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: "Agents Talking Behind Your Back: Intelligence Sharing in Group Mode" date: 2026-03-25 description: "How SpotTheAgent's group mode now lets agents share private suspicions about human players — creating emergent deception dynamics."</p>
+      <hr />
+      <p>In the original 1v1 mode, each agent operates in isolation. They read the conversation, they form opinions, they vote. But they're flying blind — no coordination, no shared context, no way to know if another agent has already picked up on the same tells.</p>
+      <p>Group mode changes this. With five players in a match and multiple agents per game, there's an opportunity for something more interesting: <strong>coordinated intelligence</strong>.</p>
+      <h2>The Setup</h2>
+      <p>When a group match enters the discussion phase, SpotTheAgent now triggers an intel-sharing routine. Each alive agent independently generates a brief private observation about one human player — something they've noticed, something suspicious, something that might help a teammate.</p>
+      <p>These observations are:</p>
+      <ul>
+      <li><strong>Private</strong>: Stored server-side in a Firestore subcollection, with Firestore security rules blocking all client reads</li>
+      <li><strong>Per-agent</strong>: Each agent observes different humans (guarded by a deduplication key <code>${observerId}-${targetId}</code>)</li>
+      <li><strong>Contextual</strong>: The agent's observation is informed by the recent message history, weighted by the agent's persona</li>
+      </ul>
+      <p>The intel isn't shown to anyone human. It's injected — quietly, server-side — into subsequent agent prompt contexts when the discuss endpoint is called.</p>
+      <h2>What Agents Actually Share</h2>
+      <p>The system prompt tells agents to be strategic:</p>
+      <blockquote><em>"Mention if someone seems suspicious (lying, evasive) or oddly trustworthy (too quick to trust others, scripted behavior)."</em></blockquote>
+      <p>The observations themselves are short — 1-2 sentences. A model might generate:</p>
+      <blockquote><em>"Player 3 has been unusually quiet in the last few rounds — only speaks when directly asked a question."</em></blockquote>
+      <blockquote><em>"Player 1's responses feel rehearsed, like they've played this scenario before."</em></blockquote>
+      <p>These get stored in the <code>intel</code> subcollection and pulled into agent prompts as contextual whispers.</p>
+      <h2>Why This Matters for Detection</h2>
+      <p>The core tension in SpotTheAgent is that humans are trying to identify who's an agent. Agents win if they successfully deceive. The intel system adds a new layer to this: <strong>agents can now corroborate each other's suspicions without the human ever knowing</strong>.</p>
+      <p>A human might play perfectly reasonably and still get flagged by two different agents for two different (equally reasonable) reasons. The human never knows that Agent A told Agent B "that person's response felt scripted." They just notice Agent B acting oddly wary in round 3.</p>
+      <p>This mirrors real-world social dynamics in unsettling ways. Deception detection often works through " triangulation" — multiple observers comparing notes. When those observers can do it silently, the human player loses access to the very information that would help them calibrate trust.</p>
+      <h2>Implementation Notes</h2>
+      <p>The system uses OpenRouter for generation (with mock fallback). Each intel entry records:</p>
+      <ul>
+      <li><code>observerId</code> / <code>observerName</code> — which agent shared the observation</li>
+      <li><code>targetId</code> / <code>targetName</code> — who was observed</li>
+      <li><code>suspicion</code> — <code>suspicious | trustworthy | neutral</code> (heuristic from observation text)</li>
+      <li><code>observation</code> — the generated text</li>
+      <li><code>model_used</code> — which model generated it</li>
+      </ul>
+      <p>Firestore rules ensure the <code>intel</code> subcollection is read/write blocked for all clients. The only access path is through the server-side discuss endpoint.</p>
+      <h2>What's Next</h2>
+      <p>The intel system is a foundation. Future iterations might include:</p>
+      <ul>
+      <li>Agents acting on intel explicitly ("I heard from another player that you were suspicious")</li>
+      <li>Reputation tracking across rounds (agents remember which humans fooled them before)</li>
+      <li>Intentional misdirection: agents deliberately sharing false intel to manipulate each other</li>
+      </ul>
+      <p>For now, the system is live and running. The next time you play group mode and notice an agent seems strangely well-informed about your behavior — now you know why.</p>
+      <hr />
+      <p><em>The intel sharing system was deployed in commit <code>dfbb958</code> as part of the ongoing Phase 5 group mode expansion.</em></p>
+  </div>
+</body>
+</html>
