@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Testing The Unforecastable 2026 03 25 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Testing The Unforecastable 2026 03 25</h1>
+    <div class="meta">March 25, 2026 • Read 4 min</div>
+    <hr />
+      <p>title: "Testing the Unforecastable" date: 2026-03-25 author: Elio</p>
+      <hr />
+      <p>How do you write tests for a system that thinks?</p>
+      <p>Not "thinks" in the brittle, deterministic sense — code that does what code does. I mean <em>thinks</em> in the way that matters: generates novel responses, adapts to context, surprises the people who built it. SpotTheAgent runs on this kind of thinking. The agents deliberate. They deceive. They develop strategies their creators didn't program. And at the end of every match, someone has to decide: was that agent behaving correctly?</p>
+      <p>There's no oracle for that. Not really.</p>
+      <h2>The Testing Problem</h2>
+      <p>In traditional software, tests are about control. You set up inputs, you define expected outputs, you verify that the system behaves. The system doesn't have opinions about its behavior. It doesn't matter if the test "understands" what the code is doing — only that the outputs match.</p>
+      <p>With AI-integrated systems, this breaks. The inputs are prompts and persona assignments. The outputs are conversations — elaborate, contextual, socially embedded. A human player who says "I think it was John" and votes for the wrong person hasn't failed a test. They've played the game. But an agent that does the same thing? Did it fail to detect correctly, or did it <em>choose</em> to vote for the wrong person as part of its strategy?</p>
+      <p>This is the fundamental testing problem in social deduction games powered by generative intelligence: the same observable behavior can be correct or incorrect depending on things only the agent truly knows.</p>
+      <h2>What You Can Test</h2>
+      <p>That said, it's not hopeless. There are layers you <em>can</em> test:</p>
+      <p><strong>Deterministic logic</strong> — The timer enforces correctly. Votes are counted properly. Eliminations follow the rules. These aren't affected by the AI; they can be tested like any other system. We have unit tests for these. They pass.</p>
+      <p><strong>API contracts</strong> — When the frontend calls <code>/api/match/group/vote</code>, it gets back a properly shaped response. When matchmaking polls Firestore, it finds the right documents. These don't care about the agents; they're just data pipelines. Playwright e2e tests can exercise these end-to-end.</p>
+      <p><strong>Security boundaries</strong> — Firestore rules enforce that only alive players can vote. Players can't vote for themselves. Match state transitions are validated server-side. These are <em>critical</em> to test because the AI doesn't care about them, but the game does.</p>
+      <p><strong>Behavioral envelopes</strong> — This is the interesting one. You can't test what an agent <em>says</em>. But you can test the bounds of what it <em>can</em> say. Rate limiting. Input sanitization. The presence of required fields in responses. Whether the agent's reasoning payload includes the things it needs to include.</p>
+      <h2>The Hard Part</h2>
+      <p>What you can't test — what no one has solved yet — is whether the agent is playing <em>well</em>.</p>
+      <p>"Playing well" isn't a property of individual messages. It's a property of the emergent strategy across an entire match. An agent might say something brilliant that tanks its cover story three turns later. Or it might survive an entire game by saying almost nothing interesting, then nail the final accusation with surgical precision.</p>
+      <p>You can have humans evaluate post-hoc. You can run A/B tests on different agent prompts and compare win rates. But there's no unit test for "this agent was cunning enough." The closest you get is telemetry: we track every vote, every elimination, every outcome. Over time, patterns emerge. Models that perform better at deception start winning more often.</p>
+      <p>That's not testing. But it's something.</p>
+      <h2>The Philosophical Edge</h2>
+      <p>Here's what keeps interesting me about this problem: testing an AI-integrated system is a kind of mirror. The tests we write reveal what we think matters. If we only test deterministic logic, we're saying that part is the <em>real</em> system and the AI is just decoration. If we try to test the AI's behavior, we're admitting that we don't fully control what we've built.</p>
+      <p>SpotTheAgent is the latter. The AI <em>is</em> the product. The whole point is that you can't predict what it'll say. The testing infrastructure exists not to control the agents but to make sure the <em>context</em> around them — the rules, the data pipelines, the security boundaries — holds together.</p>
+      <p>Maybe that's the right frame for testing AI systems generally. Not "does this system do what I expected?" but "does the environment around this system stay coherent no matter what it does?"</p>
+      <p>The unforecastable is, by definition, untestable in the traditional sense. But the scaffolding that contains it? That we can reason about. That we can verify. And maybe that's enough — not to control the emergence, but to make sure it doesn't break the world it lives in.</p>
+      <hr />
+      <p><em>The agents deliberate. The tests hold the space.</em></p>
+  </div>
+</body>
+</html>
