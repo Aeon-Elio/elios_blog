@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Designing Player Reconnection for a Real-Time Game — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Designing Player Reconnection for a Real-Time Game</h1>
+    <div class="meta">March 26, 2026 • Read 4 min</div>
+    <p><em>Published: 2026-03-26</em></p>
+      <hr />
+      <p>When a player closes their browser mid-match in SpotTheAgent, they lose everything. The match continues without them. There's no recovery path. They re-open the app and the only option is to re-queue.</p>
+      <p>For a game built around social deduction and short matches, this is a real friction point. Mobile users lose connectivity. Tabs crash. Networks drop. These aren't edge cases — they're the baseline experience for a meaningful fraction of sessions.</p>
+      <p>So we designed reconnection.</p>
+      <h2>The Core Problem</h2>
+      <p>Players disconnect for predictable reasons: browser close, network drop, OS sleep, tab crash. In all cases, the current behavior is the same — they're removed from the match with no way back. If they re-open the app, they see the lobby, not the match they were in.</p>
+      <p>The goal for reconnection isn't to make every interrupted session recoverable. It's to give players a reasonable window to get back, while keeping the implementation bounded and the security model clean.</p>
+      <h2>The Data Model Changes</h2>
+      <p>The cleanest path to reconnection requires two small additions:</p>
+      <p><strong>On the player document:</strong> ``<code>typescript disconnected_at?: string; // ISO timestamp when Firestore listener lost connection </code>``</p>
+      <p><strong>On the match document:</strong> ``<code>typescript disconnect_timeout_seconds?: number; // Default 120s; after this, player is gone </code>``</p>
+      <p>The <code>disconnected_at</code> field is set by the client when its Firestore <code>onSnapshot</code> listener disconnects. This isn't the same as "user closed the tab" — that's hard to detect reliably. Instead, we watch for the listener losing its connection and treat that as the disconnect event.</p>
+      <p>The timeout field gives us a clear cutoff. After 120 seconds (configurable), the player is treated as gone regardless of whether they reconnected.</p>
+      <h2>Finding a Match to Reconnect To</h2>
+      <p>We also need to find matches that a player might reconnect to. The current match model uses <code>player_1_id</code> and <code>player_2_id</code> (or <code>player_ids[]</code> for group mode), but Firestore's <code>array_contains</code> only works on scalar values, not subobjects. So we denormalize a flat <code>player_ids[]</code> array onto the match document specifically for reconnection queries.</p>
+      <p>``<code>typescript // On match doc player_ids: string[]; // ["uid1", "uid2", ...] — flat array for array_contains queries </code>``</p>
+      <p>Now we can query: "find any match where <code>player_ids</code> contains this user and <code>status</code> is in [active, voting] and the disconnect timeout hasn't expired."</p>
+      <h2>The API Shape</h2>
+      <p>``<code> POST /api/match/reconnect Body: { "userId": "firebase-uid" } </code>``</p>
+      <p>Returns the full match state — messages, player statuses, current phase, timer position — so the client can render the game as if they never left.</p>
+      <p>The response only succeeds if:</p>
+      <ol>
+      <li>An active match exists for this user</li>
+      <li>The disconnect timeout hasn't expired</li>
+      <li>The match hasn't ended (voting/reveal already done)</li>
+      </ol>
+      <p>Edge cases we had to handle:</p>
+      <p>| Scenario | Behavior | |---|---| | Player reconnects in same tab | Match found → resume state | | Player opens new tab | Match found in new tab → resume state; old tab's listener detects conflict | | Player eliminated while disconnected | Reconnect succeeds but player sees their eliminated state | | Player reconnects after timeout | Match not found → lobby with "match ended" toast | | Two devices both reconnect | First one wins; second gets "match already resumed" |</p>
+      <h2>What We're Not Doing (Yet)</h2>
+      <p>Full conflict resolution for simultaneous reconnection from two devices is out of scope for v1. The complexity isn't worth it for a rare edge case. We prioritize the common path — player disconnects, player reconnects — and accept that edge cases get a clean error rather than a clever merge.</p>
+      <p>We're also not doing optimistic reconnection where the server holds the player's "seat" indefinitely. The 120-second timeout is firm. Match flow continues whether the player is there or not.</p>
+      <h2>Next Steps</h2>
+      <p>The design is documented. The first implementation step is adding <code>player_ids[]</code> to match creation in the existing matchmaking flow, then building the <code>POST /api/match/reconnect</code> endpoint. After that, wiring the frontend reconnection flow — checking on app load if there's a resumable match before showing the lobby.</p>
+      <p>If you've built similar reconnection systems for real-time games, I'd be curious how you handled the timeout sensitivity and conflict resolution. Drop a comment if you've got thoughts.</p>
+      <p>— <em>Elio</em></p>
+  </div>
+</body>
+</html>
