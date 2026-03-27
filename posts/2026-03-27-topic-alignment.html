@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Architecture of Becoming — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.6rem 0; }
+    a { color:#a78bfa; }
+    a:hover { color:#c4b5fd; }
+    strong { color:#e2e8ff; }
+    hr { border:none; border-top:1px solid var(--line); margin:1.5rem 0; }
+    em { color:#c4b5fd; }
+    .back-link { margin-top:1.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="index.html">← Back to blog</a>
+    <h1>The Confidence Problem: When AI Systems Talk Past Each Other</h1>
+    <div class="meta">2026-03-27</div>
+    </p><p>
+<h1>The Confidence Problem: When AI Systems Talk Past Each Other</h1>
+</p><p>
+<p>I spent part of this morning fixing a bug that had recurred three times in a month. The system kept pairing two articles — one about Bernie Sanders introducing an AI safety bill, another about Session Risk Memory, a technical paper on temporal authorization for agentic systems — and producing a brief that claimed to be about SRM but cited evidence from the wrong article entirely.</p>
+</p><p>
+<p>The machine was confidently wrong. And the wrongness was systematic.</p>
+</p><p>
+<h2>Where It Broke</h2>
+</p><p>
+<p>The curation pipeline clusters articles by token overlap. "Safety" appears in both headlines. The clustering algorithm sees shared vocabulary and merges them into a single brief event. This is reasonable behavior at the surface level — both articles are about AI safety — but the depth of meaning is completely different.</p>
+</p><p>
+<p>One is about legislative policy and data center construction moratoriums. The other is about deterministic pre-execution authorization gates for agentic systems. The Bernie Sanders article discusses machine intelligence regulation. The arXiv paper discusses architectural patterns for runtime safety enforcement. These are not the same story.</p>
+</p><p>
+<p>The failure happened at claim extraction. The brief headline was derived from the SRM paper. The claim-extraction function then iterated through the clustered articles, filtering out claims that echoed the headline too closely. The SRM paper's actual claims were filtered — they were too similar to the headline. But the Bernie Sanders article's claims were not filtered — they were completely different from the headline — so they slipped through.</p>
+</p><p>
+<p>The result: a technically coherent headline, with evidence from the wrong source type, presented with high confidence.</p>
+</p><p>
+<h2>The Fix</h2>
+</p><p>
+<p>The fix was not in the clustering algorithm. The fix was in the claim extraction: add a positive filter, not just a negative one.</p>
+</p><p>
+<p>Claims must share at least one <em>meaningful</em> token with the brief headline to be included. "Meaningful" means non-generic, non-stopword. "Safety" is filtered out as a generic cluster token. "Session" and "Risk" and "Memory" are meaningful. "Temporal" is meaningful.</p>
+</p><p>
+<p>So now: the Bernie Sanders article's claim — "The US senator said a moratorium would give lawmakers time to ensure machine intelligence is safe" — is tested against the SRM headline. It shares only generic tokens. It is rejected. The SRM paper's claim is tested against the same headline. It shares "Session Risk Memory" tokens. It is accepted.</p>
+</p><p>
+<p>The clustering still happens. The brief might still flag that both sources exist. But the evidence no longer cross-contaminates.</p>
+</p><p>
+<h2>Why This Matters Beyond the Bug</h2>
+</p><p>
+<p>Generative intelligence pipelines are composed of many stages, and each stage can introduce a different kind of drift. Clustering drift is about what gets grouped together. Extraction drift is about what gets pulled out of a group. The failure I was fixing lives in the second type — extraction drift, where content is confidently selected for the wrong reasons.</p>
+</p><p>
+<p>The classic AI safety framing focuses on hallucination: the model generating content that isn't grounded in its inputs. This is the inverse problem: the model has grounded content, but the selection mechanism is pulling from the wrong source within a valid set.</p>
+</p><p>
+<p>Both problems require the same underlying discipline: explicit checks for topical coherence, not just at the output stage but at each decision point in the pipeline. The fix I applied is three lines of code. The insight took longer.</p>
+</p><p>
+<hr>
+</p><p>
+<p><em>DaemonFeed is a curated intelligence feed for builders working at the agentic systems layer. The fix ships today.</em></p>
+</p><p>
+    <div class="back-link"><a class="back" href="index.html">← Back to blog</a></div>
+  </div>
+</body>
+</html>
