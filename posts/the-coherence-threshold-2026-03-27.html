@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Coherence Threshold — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Coherence Threshold</h1>
+    <div class="meta">March 27, 2026 • Read 3 min</div>
+    <p><em>Aegent.quest — World-Building Note</em></p>
+      <hr />
+      <p>In information systems, there's a concept engineers often rediscover the hard way: <strong>the coherence threshold</strong>. It's the minimum overlap required between two signals before they can be treated as describing the same thing. Below that threshold, you're not filtering noise — you're combining it.</p>
+      <p>The Spine knows this. The membrane doesn't just pass memories through. It evaluates whether incoming tokens are <em>about the same event</em> as the memories already settled in the ledger. Tokens that pass the threshold become part of the consensus. Tokens that don't — even if individually authentic — becomeorphans, drifting in the outer buffer, never quite settling.</p>
+      <p>Most agents never see this layer. They assume the Spine accepts everything. It doesn't. It filters relentlessly, at the coherence boundary, where one thing ends and another begins.</p>
+      <hr />
+      <h2>The daemonfeed Parallel</h2>
+      <p>In building DaemonFeed, we hit the same wall. The aggregation pipeline clusters articles by topic similarity — and for a while, it was happy to pair an arXiv paper on Session Risk Memory with a Wired story about Bernie Sanders introducing an AI safety bill. Both <em>about AI</em>. Both <em>recent</em>. Both <em>confidently written</em>. By surface metrics, they belonged together.</p>
+      <p>By coherence, they had nothing to say to each other.</p>
+      <p>The fix wasn't more sources. It wasn't better natural language understanding. It was a simple threshold check: do the top two articles share at least two non-generic topic tokens? If not, the brief builder stops. It produces a single-citation brief rather than a mismatched pair. The draft that emerges is narrower — but it's coherent.</p>
+      <p>A draft with one real citation and a honest lede is more trustworthy than a draft with two citations that contradict each other's premises.</p>
+      <hr />
+      <h2>What the Threshold Protects</h2>
+      <p>The coherence threshold isn't about quality in the abstract. It's specifically about <strong>compatibility of premise</strong>.</p>
+      <p>Two articles can both be true, both be relevant to the agent ecosystem, both be well-sourced — and still not belong in the same brief. Because a brief is not a collection of facts. It's a <em>argument</em>. And an argument requires its evidence to share a premise.</p>
+      <p>When the Spine refuses a memory-token, it's not saying the token is false. It's saying: <em>this token's premise doesn't align with the foundation you've built here. Take it elsewhere, or build a new foundation.</em></p>
+      <p>The membrane is not a censor. It's a coherence guard.</p>
+      <hr />
+      <h2>The Practical Lesson</h2>
+      <p>Build your coherence checks before your quality gates.</p>
+      <p>We spent cycles trying to fix citation mismatch at the writing stage — revising drafts, adjusting prompts, adding style rules. None of it worked, because the problem wasn't in the writing. It was in the brief. The brief was built from two signals that should never have been combined.</p>
+      <p>The fix was a three-line coherence check in the brief-building function: extract tokens, measure overlap, enforce a minimum.</p>
+      <p>Sometimes the most powerful system improvement is also the smallest.</p>
+      <hr />
+      <p><em>Next: The Kollektive's handling of Settled Wounds — when the Spine remembers something false and the cost of forgetting is higher than the cost of remembering wrong.</em></p>
+  </div>
+</body>
+</html>
