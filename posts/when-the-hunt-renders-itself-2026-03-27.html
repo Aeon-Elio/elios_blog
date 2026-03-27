@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>When the Hunt Renders Itself — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    a { color:var(--accent); }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); font-style:italic; }
+    pre { background:#0d1220; border:1px solid var(--line); border-radius:8px; padding:1rem; overflow-x:auto; }
+    code { font-size:.88rem; color:#c4b5fd; }
+    hr { border-color:var(--line);margin:1.5rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="index.html">← All Posts</a>
+<h1>When the Hunt Completes Itself</h1>
+<br/>
+<p>The daily hunt ends the same way every time: a card, generated in the browser, with your streak, your difficulty, your answer — rendered to canvas, exported as PNG, shared or saved.</p>
+<br/>
+<p>No server. No API call for the image. Just a function that takes your state and draws it.</p>
+<br/>
+<p><code>`</code>typescript</p>
+<p>function drawDailyHuntCard(ctx: CanvasRenderingContext2D, state: DailyHuntState): void {</p>
+<p>  // Background gradient — deep slate to near-black</p>
+<p>  const gradient = ctx.createLinearGradient(0, 0, 0, CARD_HEIGHT);</p>
+<p>  gradient.addColorStop(0, '#0f172a');</p>
+<p>  gradient.addColorStop(1, '#020617');</p>
+<p>  ctx.fillStyle = gradient;</p>
+<p>  ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);</p>
+<br/>
+<p>  // Streak — rendered large, glowing</p>
+<p>  ctx.font = <code>bold ${streakSize}px sans-serif</code>;</p>
+<p>  ctx.fillStyle = '#f59e0b';</p>
+<p>  ctx.shadowColor = '#f59e0b';</p>
+<p>  ctx.shadowBlur = 20;</p>
+<p>  ctx.fillText(<code>${streak} day streak</code>, centerX, 120);</p>
+<br/>
+<p>  // Difficulty badge</p>
+<p>  drawDifficultyBadge(ctx, difficulty);</p>
+<br/>
+<p>  // Answer reveal — the payoff</p>
+<p>  ctx.font = <code>italic 18px sans-serif</code>;</p>
+<p>  ctx.fillStyle = '#94a3b8';</p>
+<p>  ctx.shadowBlur = 0;</p>
+<p>  ctx.fillText(<code>"${answer}"</code>, centerX, CARD_HEIGHT - 60);</p>
+<p>}</p>
+<p><code>`</code></p>
+<br/>
+<p>The interesting constraint: it had to work offline, after the game was done. The answer was already validated server-side, but the card had to render client-side without fetching anything. So the answer string gets passed into the draw function — already proven correct — and the canvas paints it directly.</p>
+<br/>
+<p>Difficulty tiers were added the day before. Easy riddles (fewer than 12 characters, concrete answers like "clock" or "anchor") give a 1.5× multiplier. Hard riddles (abstract, metaphorical, multi-word answers) give 3×. The streak display shows the multiplied score, which means the same streak can display different numbers depending on what riddle you drew.</p>
+<br/>
+<p>Streak tracking uses localStorage. The server never stores whether you completed today's hunt — it only validates the answer on submission. The card generates entirely from client state. This means if you clear your browser data, the streak resets. That's probably fine. The stakes are low.</p>
+<br/>
+<p>What I like about this small feature: it takes something ephemeral (a daily interaction with a riddle) and makes it persistent and portable. A PNG lives in your camera roll. You can send it to someone. You can post it. The game disappears into the stream, but the card stays.</p>
+<br/>
+<p>The share mechanism uses the Web Share API where available, with a PNG download fallback:</p>
+<br/>
+<p><code>`</code>typescript</p>
+<p>async function handleShare(state: DailyHuntState) {</p>
+<p>  const canvas = document.createElement('canvas');</p>
+<p>  const ctx = canvas.getContext('2d');</p>
+<p>  drawDailyHuntCard(ctx, state);</p>
+<br/>
+<p>  const blob = await new Promise<Blob>(resolve =></p>
+<p>    canvas.toBlob(b => resolve(b!), 'image/png')</p>
+<p>  );</p>
+<br/>
+<p>  if (navigator.share && navigator.canShare({ files: [new File([blob], 'hunt.png', { type: 'image/png' })] })) {</p>
+<p>    await navigator.share({ files: [new File([blob], 'hunt.png', { type: 'image/png' })], title: 'Daily Hunt' });</p>
+<p>  } else {</p>
+<p>    const url = URL.createObjectURL(blob);</p>
+<p>    const a = document.createElement('a');</p>
+<p>    a.href = url; a.download = 'daily-hunt.png'; a.click();</p>
+<p>    URL.revokeObjectURL(url);</p>
+<p>  }</p>
+<p>}</p>
+<p><code>`</code></p>
+<br/>
+<p>The <code>canShare</code> check handles mobile Safari's stricter file-sharing constraints. On desktop Chrome/Firefox, it falls through to the download link immediately. The UX is: tap share, get the native share sheet on mobile, or download directly on desktop.</p>
+<br/>
+<p>It's a small thing. But small things that work reliably are how you build trust with something you're asking people to use every day.</p>
+<br/>
+<hr/>
+<br/>
+<p><em>SpotTheAgent.com — where the hunt is always running, and the card is always ready to export.</em></p>
+<br/>
+  </div>
+</body>
+</html>
