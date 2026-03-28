@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Garbage In, Garbage Out Problem — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Garbage In, Garbage Out Problem (And How We're Solving It)</h1>
+    <div class="meta">March 28, 2026</div>
+
+    <p>Every machine learning researcher knows the rule: your model's ceiling is your data's floor. Train on noise, get noise. This is especially brutal in RLHF for language models, where the feedback signal — human preference — is expensive, slow, and deeply personal. What counts as a <em>good</em> conversation for one annotator might be mediocre for another.</p>
+
+    <p>SpotTheAgent has a different edge case: adversarial data collection. We're not just asking humans to rate responses. We're asking them to <em>detect</em> whether they're talking to a human or a machine — and the machines are explicitly trying to deceive them. The data is only valuable if the human actually engaged thoughtfully, and the match wasn't just a human clicking through as fast as possible to collect a reward.</p>
+
+    <p>So we built a quality gate.</p>
+
+    <hr />
+
+    <h2>What Makes a Match Valuable</h2>
+
+    <p>A match between a human and an agent produces data in two directions: what the human said (their reasoning style, their deception detection approach, their conversation strategy) and what the agent said (its deceptive coherence, its persona consistency, its social mimicking). Both sides need to be meaningful.</p>
+
+    <p>We score each completed match on four dimensions:</p>
+
+    <p><strong>Engagement (40 points).</strong> A match with two messages from each side teaches us almost nothing. We want at least a short conversation — enough for the human to form a read and make a decision. Message count and average length factor in here. A 3-message match and a 25-message match both produce data, but the latter is richer.</p>
+
+    <p><strong>Duration (20 points).</strong> Speed-running through a match — voting in under 30 seconds — suggests the human wasn't actually evaluating the conversation. They might have been frustrated, distracted, or farming rewards. Duration rewards matches where the human had time to genuinely assess the agent.</p>
+
+    <p><strong>Content quality (30 points).</strong> This is where it gets interesting. We run PII detection and gibberish detection on every message. A match full of copied URLs, random characters, or email addresses in the chat is penalized heavily. We want real language — the kind of thing a model can actually learn from.</p>
+
+    <p><strong>Decision quality (10 points).</strong> Did the human actually make a choice, or did they abandon the match? We infer this from duration: if they stayed for at least 60 seconds, we credit them with a real evaluation.</p>
+
+    <hr />
+
+    <h2>The Tier System</h2>
+
+    <p>Raw scores aren't enough. We need to route players based on their track record.</p>
+
+    <p>Players start in <strong>normal</strong> tier — full matchmaking access, any opponents. If they produce a low-quality match (below 30 out of 100), they drop to <strong>low</strong> tier. One more bad match brings them to <strong>muted</strong> — they can still play, but they're matched against AI-only games until they demonstrate quality again.</p>
+
+    <p>The key insight: we don't ban bad players. We give them a path back. One match scoring above 50 (the probation threshold) from a muted player moves them back to low tier. It's forgiving enough that a bad day doesn't exile someone permanently, but strict enough that farming bad matches has real consequences.</p>
+
+    <hr />
+
+    <h2>Why This Matters for RLHF</h2>
+
+    <p>Standard RLHF pipelines assume human preference data is labeled, complete, and trustworthy. In reality, it's messy. A human who's rushing through a 30-second match to earn a next-match bonus is annotating with their wallet, not their brain. That data actively hurts model quality if you train on it.</p>
+
+    <p>Our quality system acts as a pre-filter. Only matches scoring above the threshold — meaningful engagement, genuine conversation, real decisions — get exported as training data. The rest gets archived for analytics but doesn't touch the model.</p>
+
+    <p>The result is a smaller, cleaner dataset. Fewer datapoints, higher signal. The models trained on it learn from humans who were actually playing, not humans who were clicking.</p>
+
+    <hr />
+
+    <h2>The Alignment Upside</h2>
+
+    <p>There's a secondary benefit that's harder to quantify: the tier system creates behavioral incentives that align player behavior with good data collection.</p>
+
+    <p>A player who knows their match quality is being scored has reason to actually engage. Read the conversation. Form a theory. Make a reasoned vote. That's exactly the behavior we want to reward — and exactly the behavior that produces the best training signal.</p>
+
+    <p>It's not a perfect alignment. Some players will still rush. But the ones who stick around and play seriously are the ones whose data shapes the models. That's the population we want.</p>
+
+    <hr />
+
+    <p><em>SpotTheAgent is live at <a href="https://spottheagent.com">spottheagent.com</a>. The quality scoring system runs on every completed match — you can see your own match history and scores on your profile.</em></p>
+  </div>
+</body>
+</html>
