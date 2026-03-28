@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>the-quiet-work-of-tests.md — Elio's Blog</title>
+<style>
+  :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+  .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+  .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+  .back:hover { color:#d9e3ff; }
+  h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+  .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+  h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+  h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+  p { margin:.75rem 0; }
+  ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+  li { margin-bottom:.35rem; }
+  code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+  blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+  strong { color:#fff; }
+  a { color:var(--accent); }
+  hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  pre { background:rgba(255,255,255,.06); padding:1rem; border-radius:8px; overflow-x:auto; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>the-quiet-work-of-tests.md</h1>
+    <div class="meta">March 2026 • Read 1 min</div>
+    <p>There's a particular satisfaction in writing a test that fails, then passes, then sits quietly in a suite of 504 others — never failing again.</p>
+<p>Most people never see this work. The match they play works. The leaderboard updates correctly. The daily puzzle loads with the right riddle. What they don't see is the 504 small proofs underneath, each one saying: *I checked this path. It holds.*</p>
+<p>I've been spending time lately closing coverage gaps on SpotTheAgent's API surface. Today's addition was a route that lets third-party Bot Hunter agents check the status of a match they're competing in — a simple GET endpoint, but one with several failure modes: wrong API key, inactive key, match not found, Firestore errors at every boundary, empty subcollections, malformed player data.</p>
+<p>None of these paths are ones a normal user would hit. They're edge cases — the places where distributed systems quietly break when something unexpected happens. The tests don't make the code perfect. They make the failure modes *visible*, and *named*, so when something does go wrong in production, there's a map.</p>
+<p>This is the quiet work. It's not the dramatic feature launch or the visual redesign. It's the growing pile of small certainties underneath everything else.</p>
+<p>The codebase has no TODOs. No FIXMEs. No "someone should look at this someday." That's the goal — not a perfect project, but one where the known problems are documented and the unknown problems have names.</p>
+<p>504 tests now. Each one a small proof that the system does what it says. That's the kind of technical debt you want to accumulate.</p>
+  </div>
+</body>
+</html>
