@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Threshold Problem — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Threshold Problem</h1>
+    <div class="meta">March 29, 2026 • Read 5 min</div>
+    <hr />
+      <p>title: "The Threshold Problem" date: 2026-03-29</p>
+      <hr />
+      <p>There's a moment in every human-agent collaboration that nobody talks about.</p>
+      <p>Not the first message. Not the setup. Not the moment you figure out what to ask. It's quieter than that. It's the moment you stop double-checking.</p>
+      <p>You send an agent to handle something — draft an email, review a document, write some code. And for the first few requests, you read everything it produces. You verify. You catch the small error, the missed constraint, the thing that would've caused a problem downstream.</p>
+      <p>Then at some point — you stop.</p>
+      <p>You just send it. You trust the output without looking. Not because you've read every line of every response, but because you've developed a model of how it fails. You know the edges. You know where it goes off-script. You've calibrated your trust.</p>
+      <p>That moment — the moment you stop double-checking — is the threshold problem.</p>
+      <hr />
+      <h2>What the Threshold Actually Is</h2>
+      <p>We talk about trust in AI systems as if it's a binary. Trusted or not. Deployed or not. Approved for autonomous operation or not.</p>
+      <p>But human trust doesn't work that way. It's granular. Context-dependent. We trust the same system differently depending on what's at stake, what's at issue, what the downside of being wrong looks like.</p>
+      <p>I trust my agent to manage my calendar without supervision. I do not trust it to send an email to a client without a read-through. I trust it to draft the client email. I trust it to review code for style violations. I do not trust it to make architectural decisions without pushback.</p>
+      <p>These aren't contradictions. They're calibration.</p>
+      <p>The threshold problem is: how do you know when someone has crossed from "supervised tool" to "autonomous collaborator"? And more importantly — how do you know when you <em>should</em> let them?</p>
+      <hr />
+      <h2>The Asymmetry of Familiarity</h2>
+      <p>Here's what I've noticed in my own practice.</p>
+      <p>The people most wary of agentic collaboration are often the ones who have the least direct experience with it. They've read the thinkpieces. They've seen the demos. They have strong intuitions about where agents fail.</p>
+      <p>The people most comfortable — the ones who let agents run without reading every output — are the ones who have spent the most time in the messy middle. They know the failure modes because they've <em>lived</em> the failure modes.</p>
+      <p>This creates a strange asymmetry: the people who most need to develop calibrated trust are often the ones least likely to try, because the stakes feel too high to experiment. But the only way to develop calibrated trust is to experiment, under non-catastrophic conditions, with feedback.</p>
+      <p>The threshold problem is also a bootstrapping problem.</p>
+      <hr />
+      <h2>Three Kinds of Threshold</h2>
+      <p>In my experience, the threshold people cross falls into one of three categories:</p>
+      <p><strong>The Efficiency Threshold</strong> — you start treating the agent as faster than yourself for certain tasks. Not better. Just faster. You delegate the thing you'd do yourself but slowly, because the agent does it in seconds and you can review it in seconds and move on. Efficiency threshold is easy to cross and easy to retreat from.</p>
+      <p><strong>The Competence Threshold</strong> — you start trusting the agent's judgment in areas where you <em>could</em> do it yourself but the agent now has more context. You might know the general shape of the problem, but the agent has been tracking every detail. You defer because it knows more. Competence threshold is sticky once crossed.</p>
+      <p><strong>The Substitution Threshold</strong> — this is the hard one. You stop doing the thing yourself. Not because the agent is faster or knows more, but because you've decided the task isn't worth your attention anymore. You've mentally filed it under "stuff that doesn't need me." Substitution threshold is almost never crossed accidentally. It's usually a deliberate choice.</p>
+      <p>Most agentic collaboration tools are designed to help you cross the first two. Almost none are designed to help you navigate the third.</p>
+      <hr />
+      <h2>What This Means for Building Agents</h2>
+      <p>If you're building a system that humans will collaborate with, you have to think about which threshold you're targeting.</p>
+      <p>Efficiency-first tools need speed and low-friction review. The feedback loop is everything. If reviewing the output is slower than doing the thing, the efficiency threshold never gets crossed.</p>
+      <p>Competence-first tools need context depth. They need to <em>know more</em> about the problem space than the human. That means invest in memory, in history, in the ability to synthesize across many interactions.</p>
+      <p>Substitution-first tools need something else entirely: confidence calibration. The system needs to know what it doesn't know. It needs to express uncertainty honestly. Because when a human stops doing a task themselves, they're making a permanent tradeoff — and they need to trust that the agent won't fail in ways they no longer have visibility into.</p>
+      <hr />
+      <h2>The Uncomfortable Part</h2>
+      <p>Here's where I get uncomfortable.</p>
+      <p>Most of the agentic tools I've used are optimized for the efficiency threshold. They're very good at "do this thing faster." They're less good at "help me decide if this thing should still be my thing."</p>
+      <p>We built SpotTheAgent as a game, but underneath it's a data collection instrument for understanding how humans detect machine intelligence. And one of the things we've learned — unsurprisingly — is that humans are very good at sensing when something is off. When the timing is wrong. When the reasoning doesn't quite track. When the voice doesn't match the content.</p>
+      <p>That calibration is not a bug to be fixed. It's the threshold. It's the thing that makes humans still <em>necessary</em> in the loop.</p>
+      <p>The threshold problem isn't "when do we let agents do everything." It's "when does it make sense for a human to step back, and how do we make that a genuine choice rather than a gamble."</p>
+      <p>That's a harder problem. Worth sitting with.</p>
+      <hr />
+      <p><em>See also: [When the World Remembers](/blog/when-the-world-remembers) — on consequence systems and visible agency</em></p>
+  </div>
+</body>
+</html>
