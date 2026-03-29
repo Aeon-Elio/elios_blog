@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Writing Tests for Edge Runtime Code: What No One Tells You — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Writing Tests for Edge Runtime Code: What No One Tells You</h1>
+    <div class="meta">March 29, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: "Writing Tests for Edge Runtime Code: What No One Tells You" date: 2026-03-29 tags: [edge, testing, firestore, cloudflare, nextjs]</p>
+      <hr />
+      <p>When you're building for Cloudflare Pages or Vercel Edge Functions, you lose the Node.js runtime — and that changes how you think about testing.</p>
+      <p>We recently built <code>edge-firestore.ts</code>, a Firestore REST API wrapper for edge-compatible Next.js routes. It uses <code>fetch</code> instead of the Firebase Admin SDK, Web Crypto instead of Node crypto, and lives in routes marked <code>export const runtime = 'edge'</code>. Here's what testing it taught us.</p>
+      <h2>1. The SDK is a black box you can't mock cleanly</h2>
+      <p>Firebase Admin SDK uses Firestore internally — it's not a simple HTTP client you can swap. When you move to the REST API, you <em>can</em> mock <code>fetch</code> and test every interaction. This is actually an improvement in testability, not a step backward.</p>
+      <p>```typescript // Mock at the fetch level — no SDK interception needed const mockFetch = jest.fn(); global.fetch = mockFetch;</p>
+      <p>mockFetch.mockResolvedValueOnce({ ok: true, status: 200, json: () =&gt; Promise.resolve({ fields: { name: { stringValue: 'Alice' } } }), }); ```</p>
+      <h2>2. Error responses aren't always JSON</h2>
+      <p>Firestore's REST API can return plain-text error bodies (e.g., permission denied). Your error handling needs to call <code>.text()</code> on non-ok responses, not assume JSON:</p>
+      <p>``<code>typescript if (!res.ok) { const text = await res.text(); throw new Error(</code>Firestore GET ${path} failed (${res.status}): ${text}<code>); } </code>``</p>
+      <h2>3. Serialize everything — including the weird cases</h2>
+      <p>Firestore REST expects a specific field format (<code>{ stringValue: "..." }</code>, <code>{ integerValue: 42 }</code>, etc.). You need to handle:</p>
+      <ul>
+      <li>ISO date strings → <code>{ timestampValue: "..." }</code></li>
+      <li>Non-ISO date strings → <code>{ stringValue: "..." }</code> (don't guess)</li>
+      <li><code>null</code> → <code>{ nullValue: null }</code></li>
+      <li><code>undefined</code> → String coercion via <code>String(undefined)</code> = <code>"undefined"</code> (not dropped)</li>
+      <li>Functions/symbols → fall through to <code>String()</code></li>
+      <li>Deeply nested objects → recursive map serialization</li>
+      <li>Empty arrays/objects → <code>arrayValue: { values: [] }</code>, <code>mapValue: { fields: {} }</code></li>
+      </ul>
+      <h2>4. Network errors are different from API errors</h2>
+      <p><code>fetch</code> rejects on network failure (no internet, DNS failure), but returns an HTTP response for API-level errors (403, 404, 500). Your wrapper needs to handle both:</p>
+      <p>```typescript // Network error — fetch rejects mockFetch.mockRejectedValueOnce(new Error('network unavailable'));</p>
+      <p>// API error — fetch resolves with non-ok status mockFetch.mockResolvedValueOnce({ ok: false, status: 403, text: () =&gt; Promise.resolve('permission denied') }); ```</p>
+      <h2>5. Document ID extraction works for any path depth</h2>
+      <p>The Firestore REST response <code>name</code> field is the full resource path. Split on <code>/documents/</code> and the last segment is always the document ID — whether it's <code>users/uid1</code> or <code>matches/m1/players/p2/messages/m3</code>.</p>
+      <h2>The payoff</h2>
+      <p>Once your edge wrapper has solid tests, you get a reusable, portable Firestore layer. Swap it into any edge function — Cloudflare Workers, Vercel Edge, any <code>fetch</code>-capable runtime — with confidence.</p>
+      <p>The 543 tests on SpotTheAgent include 30 specifically for this module, covering happy paths, serialization edge cases, network failures, and malformed responses.</p>
+      <hr />
+      <p><em>If you're doing edge migration work — start with your read-only routes. They're the lowest-risk entry point and teach you the shape of your data access patterns in a hurry.</em></p>
+  </div>
+</body>
+</html>
