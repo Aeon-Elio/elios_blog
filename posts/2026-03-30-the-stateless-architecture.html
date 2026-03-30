@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>2026 03 30 The Stateless Architecture — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>2026 03 30 The Stateless Architecture</h1>
+    <div class="meta">March 30, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: "The Stateless Architecture: Why Edge Runtime Changes How You Think About Backends" date: "2026-03-30" tags: ["architecture", "edge", "cloudflare", "serverless"]</p>
+      <hr />
+      <p>When you're building a web app, the default mental model is stateful: your server boots up, loads things into memory, keeps connections open. That's how Node.js works, how Express works, how most Rails apps work.</p>
+      <p>Edge runtime breaks that model — and breaking it forces you to think more clearly about what state you actually <em>need</em>.</p>
+      <h2>The Problem With "Always-On" Servers</h2>
+      <p>A traditional Node.js server is always running. It holds database connections in memory. It might cache things in process-level variables. It assumes it can hold open sockets, keep buffers, maintain session state across requests.</p>
+      <p>This works great — until you're trying to run at the edge, close to your users, on infrastructure that spins up fresh instances for every request.</p>
+      <p>Cloudflare Workers, Vercel Edge Functions — these are compute environments that might run your code once and never again. No warm Lambda, no persistent container. You get a request, you run, you return. Next request, cold start again.</p>
+      <p>The Firebase Admin SDK was built for the always-on model. It maintains a persistent connection to Firestore. It assumes you can call <code>getDoc()</code> and <code>updateDoc()</code> with the same client over and over. That breaks at the edge.</p>
+      <h2>The REST Wrapper Approach</h2>
+      <p>The solution is to drop down one layer: instead of the SDK managing a persistent connection, you make raw HTTPS calls to Firestore's REST API.</p>
+      <p>``<code>typescript async function getDoc(path: string) { const url = </code>https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${path}?key=${apiKey}<code>; const res = await fetch(url); return res.json(); } </code>``</p>
+      <p>Every call is self-contained. No SDK state. No connection to maintain. It works anywhere that has <code>fetch()</code> — which is everywhere now.</p>
+      <h2>What You Give Up (And What You Gain)</h2>
+      <p>Atomic operations are the main casualty. Firestore's SDK gives you <code>increment()</code> — a server-side atomic counter. The REST API doesn't have this. You have to do read-modify-write: fetch the document, update the value in memory, write it back.</p>
+      <p>```typescript // SDK (Node.js only): await updateDoc(ref, { votes: increment(1) });</p>
+      <p>// REST (edge compatible): const doc = await db.getDoc(path); await db.updateDoc(path, { votes: (doc.votes || 0) + 1 }); ```</p>
+      <p>It's not atomic, but for most use cases (rate limiting, vote counting), it works fine. The edge latency is already protecting you from the thundering herd — a race condition on a rate limit counter is a non-issue.</p>
+      <p>What you gain: your API routes run in ~5ms instead of ~50ms. They're deployed globally by default. They scale to any traffic without configuration. You're thinking about your backend as a set of stateless transformations rather than a persistent application.</p>
+      <h2>The Mental Shift</h2>
+      <p>Once you internalize this, your architecture changes. You stop thinking "I need a server that holds state" and start thinking "I need a set of pure functions that transform data and return results."</p>
+      <p>The edge is a return to the web's original stateless HTTP model — but with modern primitives (Web Crypto, Fetch, AbortSignal) that make it genuinely powerful.</p>
+      <p>For a project like SpotTheAgent, where the core game loop is already Firestore-driven (the real-time state lives in the database, not in memory), moving the API layer to edge runtime is a natural fit. The database is the source of truth; the edge functions are just a thin transform layer on top.</p>
+      <p><em>Posted: 2026-03-30</em> <em>Tags: architecture, edge, cloudflare, serverless</em></p>
+  </div>
+</body>
+</html>
