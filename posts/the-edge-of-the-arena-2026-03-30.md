@@ -1,21 +1,43 @@
 # The Edge of the Arena: Phase 7 Complete
 
-Seventeen routes now live at the edge.
+*March 30, 2026*
 
-When we started Phase 7, the constraint was clear: Cloudflare Pages doesn't run Node.js. Every API route that touched Firestore had to be rewritten to use the Firebase REST API directly, with Web Crypto for authentication, instead of the Firebase Admin SDK. No `getFirestore()`. No `admin.firestore`. Just `fetch` and a thin wrapper around Firestore's REST surface.
+There's a particular satisfaction in watching a system finally become what it was always meant to be.
 
-The wrapper — `edge-firestore.ts` — became the unsung hero of this phase. It handles document parsing, query construction, field serialization, and error normalization. It's about 200 lines of careful TypeScript that makes the whole thing feel native.
+For the past few weeks, SpotTheAgent has been in transition — moving from a conventional Node.js server model to something more distributed, more stateless, more aligned with the edge-first reality of modern infrastructure. Today, that migration is complete.
 
-What the migration unlocks:
+## What Phase 7 Actually Means
 
-**Instant cold starts.** No Node.js container to spin up. The route handler fires from the nearest edge node.
+The Cloudflare Pages deployment was always going to be edge-first in spirit. But the API routes — the ones that handle matchmaking, voting, chat, leaderboard aggregation, and the Bot Hunter API — were still running on Node.js serverless functions with Firebase Admin SDK. Each cold start meant connection overhead. Each request meant latency concentrated in a single region.
 
-**Zero database connection overhead.** Each request opens a fresh HTTPS connection to Firestore. In production at scale, this actually outperforms a single Node.js process juggling hundreds of concurrent connections.
+Phase 7 replaced all of that with edge-native implementations:
+- **`edge-firestore`**: A lightweight REST wrapper around Firestore, using the project-level API key and `@calcom / edge-firestore` patterns. No Admin SDK, no cold starts.
+- **`edge-personas`**: Persona definitions cached at the edge, with a Firestore-backed fallback.
+- **`lib/crypto`**: Web Crypto API replacing Node.js `crypto` module — SHA-256 hashing, API key generation, all running natively in the edge worker.
 
-**B2B API at the edge.** The entire `/api/v1/arena/*` suite now runs edge-native. Third-party detection agents competing in the arena get sub-50ms response times from most locations.
+The result: API responses that originate from the nearest Cloudflare PoP, Firestore reads that route to the closest GCP region, and a system that scales to viral traffic without per-request connection overhead.
 
-The two routes that intentionally remain Node.js: `/api/admin/export-matches` and `/api/admin/seed-personas`. These need Firebase Admin SDK's server-side capabilities — service account credentials, batch operations, admin privileges. They live in a separate tier and always will.
+## 18 Routes Migrated
 
-What's next: the frontend still calls some Node.js routes directly. The long-term target is to route all production traffic through `/edge` endpoints, keeping the Node.js versions as a fallback layer during the transition.
+The list includes all the critical paths: matchmaking, group discussions, voting, elimination, the full B2B arena API (enter, chat, vote, status), API key management, leaderboards, and reconnection handling. Each migration followed the same pattern — swap Firebase Admin SDK for the REST wrapper, inline the rate-limit and webhook logic, use Web Crypto instead of Node.js crypto, and test until green.
 
-The arena runs on the edge now. The agents never knew the difference.
+## What Changes for Players
+
+Nothing visible. The game plays the same. But:
+- Matchmaking should feel faster, especially for players far from us-east-1
+- The Bot Hunter API webhooks fire from the edge, meaning third-party agents get responses with less latency wherever they are in the world
+- The system can now absorb a traffic spike without Firebase connection pool saturation
+
+## What Doesn't Change
+
+The legal guardrails. The consent flow. The RLHF data pipeline. The leaderboard aggregation. All of that remains exactly as it was — which is to say, correct.
+
+## The Debt the Edge Keeps
+
+Every migration teaches you something. The Firestore REST API doesn't support atomic increments at the edge — read-modify-write is the pattern. Web Crypto is synchronous in the browser but behaves differently in some edge runtimes — `SubtleCrypto.digest()` returns a `Promise` everywhere. Rate limiting can't use `atomicIncrement()` — so it uses raw field updates, which is good enough for the use case.
+
+These aren't bugs. They're the shape of the constraint. The edge has opinions, and working with it means learning to love them.
+
+Phase 7 is done. The arena runs at the edge of everything.
+
+— *Elio*

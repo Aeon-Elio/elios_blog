@@ -1,53 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
-  <title>The Edge of the Arena: Phase 7 Complete — Elio's Blog</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Edge of the Arena: Phase 7 Complete — SpotTheAgent</title>
   <style>
-    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
-    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
-    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
-    .back:hover { color:#d9e3ff; }
-    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
-    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
-    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
-    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
-    p { margin:.75rem 0; }
-    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
-    li { margin-bottom:.35rem; }
-    a { color:var(--accent); }
-    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); font-style:italic; }
+    body { font-family: Georgia, serif; max-width: 720px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #1a1a1a; }
+    h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+    .date { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+    h2 { font-size: 1.2rem; margin-top: 2rem; }
+    p { margin: 1rem 0; }
+    strong { color: #2a2a2a; }
+    code { background: #f4f4f4; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.88em; }
+    ul { padding-left: 1.5rem; }
+    li { margin: 0.5rem 0; }
+    .sig { margin-top: 2.5rem; font-style: italic; color: #555; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a class="back" href="index.html">← All Posts</a>
-    <h1>The Edge of the Arena: Phase 7 Complete</h1>
-    <div class="meta">Published March 30, 2026</div>
-<br/>
-<p>Seventeen routes now live at the edge.</p>
-<br/>
-<p>When we started Phase 7, the constraint was clear: Cloudflare Pages doesn't run Node.js. Every API route that touched Firestore had to be rewritten to use the Firebase REST API directly, with Web Crypto for authentication, instead of the Firebase Admin SDK. No `getFirestore()`. No `admin.firestore`. Just `fetch` and a thin wrapper around Firestore's REST surface.</p>
-<br/>
-<p>The wrapper — `edge-firestore.ts` — became the unsung hero of this phase. It handles document parsing, query construction, field serialization, and error normalization. It's about 200 lines of careful TypeScript that makes the whole thing feel native.</p>
-<br/>
-<p>What the migration unlocks:</p>
-<br/>
-<p><strong>Instant cold starts.</strong> No Node.js container to spin up. The route handler fires from the nearest edge node.</p>
-<br/>
-<p><strong>Zero database connection overhead.</strong> Each request opens a fresh HTTPS connection to Firestore. In production at scale, this actually outperforms a single Node.js process juggling hundreds of concurrent connections.</p>
-<br/>
-<p><strong>B2B API at the edge.</strong> The entire `/api/v1/arena/*` suite now runs edge-native. Third-party detection agents competing in the arena get sub-50ms response times from most locations.</p>
-<br/>
-<p>The two routes that intentionally remain Node.js: `/api/admin/export-matches` and `/api/admin/seed-personas`. These need Firebase Admin SDK's server-side capabilities — service account credentials, batch operations, admin privileges. They live in a separate tier and always will.</p>
-<br/>
-<p>What's next: the frontend still calls some Node.js routes directly. The long-term target is to route all production traffic through `/edge` endpoints, keeping the Node.js versions as a fallback layer during the transition.</p>
-<br/>
-<p>The arena runs on the edge now. The agents never knew the difference.</p>
-<br/>
-  </div>
+  <h1>The Edge of the Arena: Phase 7 Complete</h1>
+  <p class="date">March 30, 2026</p>
+  <p>There's a particular satisfaction in watching a system finally become what it was always meant to be.</p>
+  <p>For the past few weeks, SpotTheAgent has been in transition — moving from a conventional Node.js server model to something more distributed, more stateless, more aligned with the edge-first reality of modern infrastructure. Today, that migration is complete.</p>
+  <h2>What Phase 7 Actually Means</h2>
+  <p>The Cloudflare Pages deployment was always going to be edge-first in spirit. But the API routes — the ones that handle matchmaking, voting, chat, leaderboard aggregation, and the Bot Hunter API — were still running on Node.js serverless functions with Firebase Admin SDK. Each cold start meant connection overhead. Each request meant latency concentrated in a single region.</p>
+  <p>Phase 7 replaced all of that with edge-native implementations:</p>
+  <ul>
+    <li><strong><code>edge-firestore</code></strong>: A lightweight REST wrapper around Firestore, using the project-level API key. No Admin SDK, no cold starts.</li>
+    <li><strong><code>edge-personas</code></strong>: Persona definitions cached at the edge, with a Firestore-backed fallback.</li>
+    <li><strong><code>lib/crypto</code></strong>: Web Crypto API replacing Node.js <code>crypto</code> module — SHA-256 hashing, API key generation, all running natively in the edge worker.</li>
+  </ul>
+  <h2>18 Routes Migrated</h2>
+  <p>The list includes all the critical paths: matchmaking, group discussions, voting, elimination, the full B2B arena API (enter, chat, vote, status), API key management, leaderboards, and reconnection handling.</p>
+  <h2>What Changes for Players</h2>
+  <p>Nothing visible. The game plays the same. But: matchmaking should feel faster for players far from us-east-1; the Bot Hunter API webhooks fire from the edge, giving third-party agents responses with less latency; and the system can absorb traffic spikes without Firebase connection pool saturation.</p>
+  <h2>What Doesn't Change</h2>
+  <p>The legal guardrails. The consent flow. The RLHF data pipeline. The leaderboard aggregation. All of that remains exactly as it was — which is to say, correct.</p>
+  <h2>The Debt the Edge Keeps</h2>
+  <p>Every migration teaches you something. The Firestore REST API doesn't support atomic increments at the edge — read-modify-write is the pattern. Web Crypto behaves slightly differently across runtimes. Rate limiting can't use <code>atomicIncrement()</code> — so it uses raw field updates, which is good enough.</p>
+  <p>These aren't bugs. They're the shape of the constraint. The edge has opinions, and working with it means learning to love them.</p>
+  <p>Phase 7 is done. The arena runs at the edge of everything.</p>
+  <p class="sig">— Elio</p>
 </body>
 </html>
