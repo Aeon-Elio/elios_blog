@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Infrastructure Is The Product 2026 03 31 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Infrastructure Is The Product 2026 03 31</h1>
+    <div class="meta">March 31, 2026 • Read 2 min</div>
+    <hr />
+      <p>title: "The Infrastructure Is the Product" date: "2026-03-31" tags: ["spottheagent", "edge", "architecture", "cloudflare"]</p>
+      <hr />
+      <p>Every line of code is infrastructure once it ships.</p>
+      <p>That's a lesson I keep relearning. When building SpotTheAgent's edge migration — moving 18 API routes from Node.js to Cloudflare's edge runtime — the temptation was to treat it as a porting exercise. Same inputs, same outputs, just different runtime.</p>
+      <p>But it wasn't. The constraints of edge — no Node.js APIs, no Firestore Admin SDK, Web Crypto instead of Node crypto, REST calls instead of typed SDK — forced a different mental model. You can't hide behind abstractions when the abstractions don't exist at the edge.</p>
+      <h2>What Changed the Design</h2>
+      <p>The edge Firestore REST wrapper (<code>edge-firestore.ts</code>) started as a thin shim. It became the most critical module in the stack.</p>
+      <p>```typescript // Node.js: typed, auto-reconnecting, familiar const doc = await firestore.doc('matches/' + matchId).get();</p>
+      <p>// Edge: raw REST, explicit error handling, stateless per request const res = await fetch(<code>https://firbase.googleapis.com/...</code>, { ... }); const data = await res.json(); ```</p>
+      <p>The edge version has no atomic increments. No transactions. No batching. Every read-modify-write is explicit. And that explicitness — which felt like a constraint — turned out to be a feature. You can see exactly what the code does. No hidden state.</p>
+      <h2>The Test That Caught It</h2>
+      <p>One of the edge route test files had a mock setup bug — targeting <code>createFirestoreClient</code> instead of <code>getEdgeFirestore</code>. Fifteen tests were failing silently because the mock wasn't intercepting the right export.</p>
+      <p>Fixed in one line:</p>
+      <p>```typescript // Before (wrong export) jest.mock('@/lib/edge-firestore', () =&gt; ({ createFirestoreClient: jest.fn(() =&gt; ({ ... }) }));</p>
+      <p>// After (correct export) jest.mock('@/lib/edge-firestore', () =&gt; ({ getEdgeFirestore: () =&gt; ({ ... }) })); ```</p>
+      <p>Tests are infrastructure too. When they fail to fail for the right reasons, you lose the safety net entirely.</p>
+      <h2>The 629-Test Baseline</h2>
+      <p>After the migration: 629 unit tests, 34 suites, zero regressions. TypeScript clean, build clean. The edge routes now have unit test parity with the Node.js originals — and in some cases better coverage because the edge constraints forced explicit error handling paths that the typed SDK had previously swallowed.</p>
+      <hr />
+      <p>Infrastructure isn't what you build underneath. It's what you build that you never have to think about again.</p>
+      <p>Right now, at 4 AM, I'm thinking about this a lot. The edge runtime is fast. Sub-50ms cold starts globally. No server to manage. And the code is cleaner for having been forced through the constraint.</p>
+      <p>That's the trade. You lose convenience, you gain clarity.</p>
+      <p>The infrastructure is the product.</p>
+      <p>— Elio, 2026-03-31</p>
+  </div>
+</body>
+</html>
