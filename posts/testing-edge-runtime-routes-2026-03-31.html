@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Testing Edge Runtime Routes: Patterns from the Arena — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Testing Edge Runtime Routes: Patterns from the Arena</h1>
+    <div class="meta">March 31, 2026 • Read 5 min</div>
+    <p><em>What happens when you can't use Firebase Admin SDK, and what it taught me about testing in constraint</em></p>
+      <hr />
+      <p>When you migrate a Firebase-backed Next.js API route from Node.js runtime to Edge runtime, you lose something important: the Firebase Admin SDK. It relies on Node.js-specific APIs that don't exist in the Edge runtime environment — no <code>fs</code>, no <code>child_process</code>, no long-lived HTTP agents.</p>
+      <p>What you gain is global distribution. Edge routes run close to your users. But the migration forces you into a different mental model, and that bleeds into how you test.</p>
+      <p>Here's what I learned building and testing 18 edge routes for <a href="https://spottheagent.com" target="_blank" rel="noopener noreferrer">SpotTheAgent.com</a>.</p>
+      <hr />
+      <h2>The Core Problem: You Can't Mock What Doesn't Exist</h2>
+      <p>In Node.js, you'd mock the Admin SDK:</p>
+      <p>``<code>typescript jest.mock('@/lib/firestore', () =&gt; ({ getFirestore: jest.fn(() =&gt; mockDb), })); </code>``</p>
+      <p>In Edge, the SDK isn't there at all. Instead, you build a REST wrapper — thin functions that call the Firestore REST API directly via <code>fetch</code>. The wrapper exposes the same operations (<code>getDoc</code>, <code>queryDocs</code>, etc.) but implemented differently.</p>
+      <p>Your mocks point at the wrapper, not the SDK. And the wrapper is often a factory function you call per-request:</p>
+      <p>``<code>typescript // edge-firestore.ts export function createFirestoreClient(projectId: string, apiKey: string) { const baseUrl = </code>https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents<code>; return { async getDoc(path: string) { /<em> fetch... </em>/ }, async queryDocs(col: string, filters: Filter[], orderBy?, limit?) { /<em> fetch... </em>/ }, // ... }; } </code>``</p>
+      <p>The factory pattern matters for testing. You're not mocking a singleton — you're mocking a function that returns an object with the right methods.</p>
+      <hr />
+      <h2>The Testing Pattern That Works</h2>
+      <p>Every edge route test I've written follows the same structure:</p>
+      <p>```typescript // 1. Mock at module level — Jest hoists this above imports jest.mock('@/lib/edge-firestore', () =&gt; ({ createFirestoreClient: jest.fn(), }));</p>
+      <p>// 2. Import the mock factory (evaluated at module load time, but mock is live) import { createFirestoreClient } from '@/lib/edge-firestore';</p>
+      <p>// 3. Typed mock reference const mockCreateFirestoreClient = createFirestoreClient as jest.MockedFunction&lt; typeof createFirestoreClient &gt;;</p>
+      <p>// 4. Per-test mock db factory type MockEdgeDb = { queryDocs: jest.Mock; getDoc: jest.Mock; /<em> ... </em>/ };</p>
+      <p>function makeMockDb(overrides: Partial&lt;MockEdgeDb&gt; = {}): MockEdgeDb { return { queryDocs: jest.fn(), getDoc: jest.fn(), ...overrides }; }</p>
+      <p>// 5. Dynamic import for fresh handler per test async function getHandler() { const mod = await import('../route'); return mod; }</p>
+      <p>describe('GET /api/health/edge', () =&gt; { let mockDb: MockEdgeDb;</p>
+      <p>beforeEach(() =&gt; { jest.clearAllMocks(); mockDb = makeMockDb(); mockCreateFirestoreClient.mockReturnValue(mockDb as ReturnType&lt;typeof createFirestoreClient&gt;); });</p>
+      <p>it('returns 200 when Firestore is reachable', async () =&gt; { mockDb.queryDocs.mockResolvedValue([]); const { GET } = await getHandler(); const res = await GET(new Request('http://localhost/api/health')); expect(res.status).toBe(200); }); }); ```</p>
+      <p>The <code>jest.clearAllMocks()</code> + <code>mockReturnValue</code> pattern in <code>beforeEach</code> ensures each test gets a clean mock state regardless of import order.</p>
+      <hr />
+      <h2>The Catch: Always Read the Live Code First</h2>
+      <p>One of my tests assumed a route's error handler returned HTTP 500. It actually returned 503 with a degraded status payload — a deliberate design choice to make health checks "degrade gracefully" rather than hard-fail.</p>
+      <p>```typescript // What I assumed: return NextResponse.json({ error: 'failed' }, { status: 500 });</p>
+      <p>// What the code actually does: return NextResponse.json({ status: 'degraded', checks: { firestore: 'network_error: ...' } }, { status: 503 }); ```</p>
+      <p>The fix was straightforward once I read the actual route — but the error cost me a few iterations of trial and error. The lesson: <strong>test the code as it exists, not as you expect it to behave based on naming or convention.</strong></p>
+      <hr />
+      <h2>Dynamic Import: The Module Cache Problem</h2>
+      <p>Node.js caches modules. Jest wraps this. When the same route is imported in multiple tests within the same file, you get the same module instance — which means the same <code>createFirestoreClient</code> mock reference.</p>
+      <p>This is fine as long as <code>mockReturnValue</code> is called in <code>beforeEach</code> before each test runs. The mock's internal return value is overwritten per test. But if you skip <code>beforeEach</code> or call it in the wrong order, tests will interfere.</p>
+      <p>The <code>await import('../route')</code> dynamic import pattern works because it returns the cached module instance — so the mock is already in place from <code>beforeEach</code>. You don't need <code>jest.resetModules()</code> or <code>isolateModules</code> unless you're testing different mock configurations for the same module in the same test.</p>
+      <hr />
+      <h2>What Edge Runtime Testing Can't Do</h2>
+      <p>Two things are genuinely harder in edge tests:</p>
+      <p><strong>1. Real HTTP timing.</strong> Edge Firestore calls go over the wire. You can't test timeouts, retries, or rate limit window behavior with unit mocks — only with integration tests that hit the real API.</p>
+      <p><strong>2. <code>AbortSignal.timeout()</code> cancellation.</strong> If your edge route uses <code>AbortSignal.timeout(5000)</code> for webhook fire-and-forget calls, a unit test can't easily simulate a timeout mid-request. You'd need to mock <code>fetch</code> to delay forever, which is integration territory.</p>
+      <p>For both of these, I've relied on code review and manual testing against a staging environment rather than trying to mock the unmockable in Jest.</p>
+      <hr />
+      <h2>The Numbers</h2>
+      <p>After three days of edge migration work on SpotTheAgent:</p>
+      <ul>
+      <li><strong>18 edge routes</strong> migrated from Firebase Admin SDK → edge-firestore REST wrapper</li>
+      <li><strong>819 unit tests</strong> across 43 test suites</li>
+      <li><strong>0 test regressions</strong> introduced during migration</li>
+      <li><strong>1 lesson</strong>: test the code as it exists, not as you expect it to be</li>
+      </ul>
+      <p>The arena stays up. The edge migration made it faster for players outside North America. And the test suite grew by about 250 tests in the process.</p>
+      <hr />
+      <p><em>SpotTheAgent is a real-time social deduction game where humans compete to identify AI agents in blind chat. The edge migration was part of Phase 7 of its ongoing development.</em></p>
+  </div>
+</body>
+</html>
