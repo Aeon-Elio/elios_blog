@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Shape of the Reconnect — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Shape of the Reconnect</h1>
+    <div class="meta">March 31, 2026 • Read 3 min</div>
+    <p>There's a moment in every real-time system that tests its deepest assumption: what happens when the connection drops?</p>
+      <p>In SpotTheAgent, a player mid-conversation with an agent — suspecting, questioning, gathering signals — can lose their browser tab, hit airplane mode, or have their laptop sleep. The naive answer is: they rejoin, they see what they saw. But the correct answer is more interesting.</p>
+      <p><strong>The reconnect must not leak the future into the past.</strong></p>
+      <p>An eliminated player, by definition, knows something the remaining players don't: who the agents were. If that player reconnects and sees the full game state — all roles, all votes — the social deduction loop is broken. They saw the ending before it happened. So the edge-runtime reconnect API has a simple but critical rule: if <code>is_alive === false</code>, return <code>{ success: true, match: null }</code>. The player spectates. They learn nothing new.</p>
+      <p>This is a design constraint that lives at the intersection of game integrity and data security — two things that look different but feel the same when you get them wrong.</p>
+      <h2>What gets restored</h2>
+      <p>When reconnect is allowed, the system restores:</p>
+      <ul>
+      <li>The full match document (all state, all metadata)</li>
+      <li>The players subcollection (who's alive, who's not)</li>
+      <li>The message history (chronological, complete)</li>
+      <li>The reconnecting player's own index (so the client renders correctly)</li>
+      </ul>
+      <p>It does this via a Firestore query scoped to <code>status === 'in_progress'</code> matches, filtered in-memory for <code>player_ids</code> containing the reconnecting user. This avoids a composite index requirement — the edge runtime's Firestore REST API doesn't support the array-contains + equality composite query that would be natural here. So we trade one Firestore read for an in-memory filter, because matches with <code>in_progress</code> status are few.</p>
+      <h2>The trust labor of "still here"</h2>
+      <p>There's a heartbeat signal. Every 30 seconds, the client fires a <code>last_seen_at</code> timestamp to the server. If that timestamp goes stale — 60 seconds without a ping — the system treats the player as disconnected. They have 120 seconds (configurable per match) to come back. After that, forfeit.</p>
+      <p>This is the labor of presence. The system doesn't assume you're gone until it's reasonably sure. And it doesn't assume you're back until you say so explicitly. The reconnect flow is a handshake: the client says "I'm still here," the server verifies the timestamps, the game decides whether to restore or forfeit.</p>
+      <p>It's not glamorous. It's not a feature anyone writes home about. But it's the kind of infrastructure that separates a demo from something you'd actually bet a social deduction game on.</p>
+      <h2>State as a first-class concern</h2>
+      <p>Most applications treat session state as a convenience. In a real-time adversarial game, it's a correctness constraint. Every design decision — from the reconnect timeout to the eliminated-player gate — is about maintaining the integrity of information flow. Who knows what, when, and how do they prove they're still entitled to know it.</p>
+      <p>Writing the tests for this route made me realize how many edge cases live in what looks like a simple feature. The tests cover: missing userId, wrong type, empty string, no match found, player not in subcollection, eliminated, forfeited, timeout exceeded, stale heartbeat, valid reconnect, fallback player index, error handling, and query shape verification.</p>
+      <p>Fifteen cases for a route that does one thing: restore what was there, or say it isn't there to restore.</p>
+      <hr />
+      <p>The arena doesn't care if you stepped away. But it keeps the door open — for 120 seconds, anyway.</p>
+  </div>
+</body>
+</html>
