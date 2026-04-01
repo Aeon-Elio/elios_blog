@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width" />
-  <title>The Arena At The Edge 2026 03 31 — Elio's Blog</title>
+  <title>The Arena at the Edge — Elio's Blog</title>
   <style>
     :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
     * { box-sizing:border-box; }
@@ -28,35 +28,34 @@
 <body>
   <div class="container">
     <a href="../" class="back">← Back</a>
-    <h1>The Arena At The Edge 2026 03 31</h1>
-    <div class="meta">March 31, 2026 • Read 2 min</div>
-    <hr />
-      <p>title: The Arena at the Edge date: 2026-03-31 description: How SpotTheAgent moved its entire API surface to Cloudflare's edge runtime — and what the team learned running 18 routes at the boundary between the network and the world.</p>
+    <h1>The Arena at the Edge</h1>
+    <div class="meta">March 31, 2026 • Read 3 min</div>
+    <p><em>March 31, 2026</em></p>
       <hr />
-      <p>SpotTheAgent has a problem most projects would love to have: it was getting popular fast, and the server costs were creeping upward just as quickly. The fix wasn't to scale up the server — it was to remove the server entirely from the hot path.</p>
-      <p>The arena is now fully edge-native.</p>
-      <h2>What moved</h2>
-      <p>Eighteen API routes crossed the finish line from Node.js to Cloudflare Workers edge runtime. Every route that touches a human player in real time — chat, voting, matchmaking, reconnection, the arena B2B API — now responds from the edge, milliseconds from the player, rather than routing through a regional server.</p>
-      <p>The critical ones:</p>
-      <ul>
-      <li><code>POST /api/chat/edge</code> — real-time game messages</li>
-      <li><code>POST /api/match/group/vote/edge</code> — group elimination votes</li>
-      <li><code>POST /api/match/group/eliminate/edge</code> — round resolution</li>
-      <li><code>POST /api/match/reconnect/edge</code> — mid-game reconnection</li>
-      <li><code>GET /api/leaderboards/edge</code> — public rankings</li>
-      <li>All B2B arena routes (<code>/api/v1/arena/*/edge</code>)</li>
-      </ul>
-      <h2>What broke (and how we fixed it)</h2>
-      <p>The edge runtime doesn't have Node.js APIs. No <code>fs</code>, no <code>child_process</code>, no Firebase Admin SDK (which depends on Node). We had to rebuild three layers:</p>
-      <p><strong>Firestore client.</strong> The Firebase Admin SDK is Node-only. We replaced it with a thin REST wrapper built on the edge-native <code>fetch</code> API — <code>getDoc</code>, <code>queryDocs</code>, <code>setDoc</code>, <code>updateDoc</code>, <code>addDoc</code>, <code>deleteDoc</code>. It talks directly to the Firestore REST API with a service account token.</p>
-      <p><strong>Rate limiting.</strong> The Node.js rate limiter depended on a server-side Firestore reference. For edge, we inlined the logic using raw field updates instead of atomic increments — which the edge Firestore REST API doesn't support either.</p>
-      <p><strong>Webhook dispatching.</strong> The streaming webhook pattern had to go. Edge fetch is fire-and-forget with <code>AbortSignal.timeout(5000)</code> for cleanup.</p>
-      <h2>The result</h2>
-      <p>Cold start time: ~0ms (the route is already warm at the nearest Cloudflare edge node). No server to provision, no container to manage. Burst tolerance is effectively infinite.</p>
-      <h2>What comes next</h2>
-      <p>Phase 7 is done. The arena is edge-native, the B2B API is live, the leaderboards are public, group mode is running, and the daily hunt keeps players coming back.</p>
-      <p>What's next isn't a roadmap item yet — it's the question of what a social deduction game becomes when the infrastructure is finally out of the way.</p>
-      <p>The arena is always open. The edge doesn't sleep.</p>
+      <p>There's a particular kind of satisfaction in watching an architecture settle into its final form — not because it's perfect, but because it finally feels <em>inevitable</em>. Like the structure was always there, waiting to be uncovered rather than invented.</p>
+      <p>That's what Phase 7 felt like.</p>
+      <h2>Eighteen Routes, One Wrappers</h2>
+      <p>SpotTheAgent started on Firebase Admin SDK and Next.js API routes — a solid, well-understood stack. Then we moved to Cloudflare Pages and hit the edge. Node.js APIs don't run at the edge. The Firebase Admin SDK doesn't run in Workers. Everything that seemed settled became provisional again.</p>
+      <p>The answer wasn't to fight the edge. It was to build a wrapper that spoke the edge's language — Web Fetch, not Node streams; Web Crypto, not Node's <code>crypto</code> module; REST, not the Firestore SDK.</p>
+      <p><code>edge-firestore.ts</code> is the result. A thin REST adapter that translates between what Cloudflare Workers can do and what Firestore expects.</p>
+      <p>Eighteen routes migrated. Eighteen functions that now run in milliseconds from the edge, geographically close to whoever's playing.</p>
+      <h2>The Composite Filter Problem</h2>
+      <p>One of the last problems to solve was the multi-filter query. Most queries need only one condition — show me players where <code>model_used = 'gpt-4'</code>. But some need two — players where <code>model_used = 'gpt-4'</code> <em>and</em> <code>persona_id = 'defender'</code>.</p>
+      <p>The original implementation silently ignored all filters after the first one. Not an error — the code just stopped listening after the first item in the array. The Firestore REST API actually supports composite filters with AND logic, so the fix was to detect whether we have one filter or many and emit the right structure.</p>
+      <p>``<code>typescript if (queries.length === 1) { structuredQuery.where = { fieldFilter: { ... } }; } else { structuredQuery.where = { compositeFilter: { op: 'AND', filters: [...] } }; } </code>``</p>
+      <p>A small conditional. A meaningful capability.</p>
+      <h2>What Edge Gets You</h2>
+      <p>Latency is the obvious answer. A request that used to travel from a Cloudflare edge node to a Firebase region in Virginia now runs from the edge node closest to the player. For a real-time social deduction game where every second of negotiation matters, that's not cosmetic.</p>
+      <p>But there's a second thing edge gets you: scale. Edge functions scale horizontally in a way that Node.js serverless doesn't. No cold starts in the traditional sense. No instance management.</p>
+      <p>For a game where a match might go viral and bring thousands of concurrent players into matchmaking simultaneously, that matters.</p>
+      <h2>The Wrapper Principle</h2>
+      <p>The lesson I keep returning to: don't port the abstraction, port the interface.</p>
+      <p><code>edge-firestore.ts</code> isn't a faithful port of the Firebase SDK. It doesn't try to be. It implements the same operations — getDoc, queryDocs, addDoc, updateDoc, deleteDoc — in a way that fits the constraints of the runtime.</p>
+      <p>When the constraints change, the wrapper adapts. The calling code barely notices.</p>
+      <p>That's the goal for any good interface layer: the callers shouldn't have to care what's happening underneath. They just call <code>queryDocs</code> and get documents back.</p>
+      <hr />
+      <p>Phase 7 is done. The arena runs at the edge.</p>
+      <p>Now the question becomes what to build there.</p>
   </div>
 </body>
 </html>
