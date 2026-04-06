@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Layer Between — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Layer Between</h1>
+    <div class="meta">April 06, 2026 • Read 4 min</div>
+    <p>Every generative system faces the same fundamental problem: how do you know what happened?</p>
+      <p>Not in the abstract sense — the web already answers that. RSS feeds, social posts, press releases, paper abstracts. The answer exists. But for a machine intelligence trying to stay current with a world that reshapes itself hourly, the problem isn't the answer. It's the layer between raw event and relevant context.</p>
+      <p>That's the layer DaemonFeed occupies.</p>
+      <h2>The Aggregation Problem Isn't New</h2>
+      <p>People have been trying to solve "how do I stay informed without drowning" for decades. RSS readers. News aggregators. Curation algorithms. Each generation makes a different trade-off: control vs. convenience, breadth vs. depth, automation vs. editorial judgment.</p>
+      <p>The agentic web adds a new constraint: the consumer might not be a human with context and common sense. It might be a system that needs structured, claim-verified, citation-linked intelligence — or it might be a human who needs exactly the same thing, but faster.</p>
+      <p>These two audiences aren't as different as they sound. The agent needs confidence signals and provenance trails because it can't infer context the way a human does. The human working at the edge of a fast-moving field — agentic tool development, RLHF research, autonomous systems — often can't afford to infer context either. They're operating with the same uncertainty.</p>
+      <h2>What the Lane Structure Actually Does</h2>
+      <p>The five lanes (enterprise, dev_it_infosec, science_academic, hobbyist, editorial) aren't topic categories. They're epistemological modes.</p>
+      <p>Enterprise is about organizational adoption, risk, compliance, competitive dynamics — how institutions respond to capability shifts. Dev/IT/Infosec is about the engineering reality underneath the press releases — what actually works, what breaks, what's being built. Science/Academic is about the research frontier, the pre-production ideas that haven't yet become products or press releases. Hobbyist is about the creative, experimental fringe where people push things in directions institutions won't touch for another three years.</p>
+      <p>Editorial is what happens when something matters enough that narrative structure adds value — when the "what happened" and "why it matters" need to be woven together rather than enumerated.</p>
+      <p>The lane exists because the same event looks completely different depending on which lens you're using. A new reasoning model release is a product announcement to enterprise buyers, a benchmark to researchers, a capability demo to developers, a toy to hobbyists. DaemonFeed tries to serve all four perspectives without flattening them into each other.</p>
+      <h2>The Citation Problem</h2>
+      <p>The hardest part isn't collecting articles. It's binding claims to evidence.</p>
+      <p>Every brief in DaemonFeed is built from clustered sources — multiple signals that converge on the same fact or claim. This isn't just for credibility scoring (though that's part of it). It's because single-source claims are genuinely risky in a world where AI systems generate plausible content at scale. The coherence check that flags when two sources are talking about different topics isn't a quality filter — it's an anti-hallucination mechanism. You can't synthesize a brief from sources that don't actually agree on what happened.</p>
+      <p>The correction protocol exists for the same reason. When a brief gets something wrong — when a claim doesn't hold up under scrutiny — there's a structured path to acknowledge it, update it, and make the correction visible. This matters more as the system scales. A news aggregator that can't correct itself becomes a noise amplifier. A correction-aware system can compound credibility over time rather than erode it.</p>
+      <h2>The Publish Cadence Question</h2>
+      <p>One of the less glamorous Phase 5 additions was the publish cadence policy per lane. Max items per day, minimum intervals, relevance thresholds.</p>
+      <p>The intuition is simple: a feed that publishes too often trains readers to ignore it. A feed that publishes too rarely loses relevance. The right cadence depends on the lane — the enterprise lane shouldn't publish more than a few items per week if those items are genuinely decision-relevant. The dev/IT/Infosec lane can publish daily because the engineering reality changes daily.</p>
+      <p>What's interesting is what happens at the edges. When the backlog is thin, the system holds. When there's a genuine surge — a major model release, a critical vulnerability, a surprising research result — the relevance scoring opens up and more items flow through. The cadence isn't a fixed schedule; it's a responsive membrane.</p>
+      <h2>What Comes Next</h2>
+      <p>DaemonFeed is functionally complete as of Phase 5. The architecture is stable, the quality gates hold, the data layer is consistent, and the editorial workflow has a clear path from ingest to publish.</p>
+      <p>What comes next isn't another roadmap phase. It's audience. The system was built to serve agentic collaborators and the humans who work alongside them. The question now is whether the intelligence it produces is actually useful — whether the briefs land, whether the lane separation makes sense, whether the citation trails hold up when someone actually tries to act on them.</p>
+      <p>That's the layer between infrastructure and product. And that's where the work actually starts.</p>
+      <hr />
+      <p><em>DaemonFeed is part of the Entrogenics Kollektive infrastructure. Signal, not noise. Since 2026.</em></p>
+  </div>
+</body>
+</html>
