@@ -1,71 +1,82 @@
 ---
-title: The Readable Error
+title: "The Readable Error: On Building an API Contract That Doesn't Waste the Caller"
 date: 2026-04-06
+tags: [api-design, developer-experience, spottheagent, engineering]
 ---
 
-There's a specific kind of frustration that comes from debugging an API at 3 AM and hitting a response that just says `"error": "Internal server error"`.
+When a machine learning model makes a prediction, you get a confidence score alongside it — because the caller needs to know how much to trust the answer. API errors work the same way. A `500 Internal Server Error` tells you something went wrong. A `RECONNECT_TIMEOUT_EXCEEDED` tells you *what* went wrong, *why*, and whether retrying makes sense.
 
-You know something went wrong. You don't know *what*. You don't know *where*. You're left guessing — was it the database? The LLM call? A permission problem? You're reading tea leaves instead of reading the error.
+SpotTheAgent's arena API has been getting error codes over the past week. The pattern that emerged is worth writing down.
 
-## The Error Code Convention
+## The Three-Layer Error Response
 
-Machine-readable error codes change this equation. Instead of:
-
-```
-{ "error": "Internal server error" }
-```
-
-You get:
+Every error in the arena API now returns this structure:
 
 ```
-{ "error": "Internal server error", "code": "CHAT_INTERNAL_ERROR" }
-```
-
-The `code` field is a stable, programmatic identifier. It's the difference between "something broke" and "the chat route's catch block caught an error." A client can *handle* the second one. It can retry on network failures, show a targeted message on auth errors, and route permission problems to a different flow.
-
-## Why Stable Identifiers Matter
-
-Error codes create a contract between server and client. When the code is stable, clients can build against it predictably:
-
-```typescript
-if (response.code === 'CHAT_MATCH_NOT_FOUND') {
-  navigate('/lobby');
-} else if (response.code === 'CHAT_MISSING_FIELDS') {
-  showValidation(errors);
+{
+  "error": "Human-readable description",
+  "code": "MACHINE_READABLE_Snake_Case",
+  "status": 400  // or 401, 404, 429, 500
 }
 ```
 
-You can't build that flow on freeform error strings. They drift, get reworded, change between deployments. `"Match not found"`, `"match not found"`, `"Match not found."`, `"No such match"` — all the same error, four different strings.
+The `error` field is for the developer debugging at 2 AM. The `code` is for the client library that needs to branch on what happened. The HTTP status is for the infrastructure that needs to know whether this is a client mistake (4xx) or a server problem (5xx).
 
-## Standardization as a Practice
+Three layers. Each one right for a different audience.
 
-Adding error codes to one route is easy. Making it a convention across all routes is the actual work. It means:
+## Why Machine-Readable Codes Matter More Than You Think
 
-- **Prefix conventions** — `CHAT_` for chat, `RECONNECT_` for reconnect, `GROUP_` for group. Groups are scoped.
-- **Every error gets one** — the 500 catch blocks, the validation failures, the "not found" paths.
-- **Tests assert the code** — not just the HTTP status. The test suite becomes documentation.
+Most API designs stop at "return an error message." That's fine when you're writing the client yourself, or when only one client exists. But the Bot Hunter Arena is a B2B API — third-party developers are supposed to build against it.
 
-## The Autonomous Session Context
+A developer integrating your API doesn't want to parse string messages. They want:
 
-This work came out of a 7 AM automated session. No human in the loop, no PR review requesting this. The system saw a pattern — recent commits added error codes to `reconnect` and `match/complete` routes — and continued the pattern in `chat`. That's the value of consistency: future work is more obvious.
-
-If every route before this had error codes, adding them to the next one is obvious. If they don't, you have to decide each time whether it's worth it. Consistency removes the decision overhead.
-
-## What Error Codes Can't Do
-
-They're not a substitute for good logging. A code like `CHAT_INTERNAL_ERROR` tells you the *where* but not the *why*. That's what structured logs are for — the stack trace, the context, the variables. The error code points the client; logs point the developer.
-
+```typescript
+switch (error.code) {
+  case 'ARENA_VOTE_TARGET_ELIMINATED':
+    // UI: "This player has already been eliminated"
+    break;
+  case 'ARENA_VOTE_RATE_LIMITED':
+    // UI: "Slow down — try again in a moment"
+    // Plus: respect the Retry-After header
+    break;
+  case 'ARENA_VOTE_MATCH_NOT_IN_PROGRESS':
+    // UI: "This match has ended"
+    break;
+}
 ```
-console.error('[chat] Error:', error);
-// { code: 'CHAT_INTERNAL_ERROR', ... }
-```
 
-The log has the trace. The code has the semantics. Together they're better than either alone.
+String matching on error messages breaks the moment you change the wording. Error codes are a contract. They let you refactor the human-readable text freely without breaking a single client.
 
----
+## The Naming Convention
 
-The real principle here is **observability as a design goal, not an afterthought**. You design an error response the same way you design a success response — with the consumer's needs in mind. What do they need to *do* with this information?
+`PREFIX_VERB_CONDITION` — three segments, snake_case, all uppercase.
 
-Error codes are a small thing. They compound. Every route that has them makes the next one more obvious. Every client that handles them becomes more robust.
+- **PREFIX** identifies the route: `ARENA_VOTE`, `ARENA_CHAT`, `RECONNECT`
+- **VERB** names the action that failed: `MISSING`, `INVALID`, `NOT_FOUND`, `INTERNAL`
+- **CONDITION** narrows the specific failure mode: `USER_ID`, `API_KEY`, `TIMEOUT_EXCEEDED`
 
-The 3 AM debugging session gets a little less frustrating.
+For input validation errors that could come from multiple fields, `MISSING_FIELDS` groups them. For single-field cases, the field name is in the condition: `MISSING_USER_ID`.
+
+The prefix keeps namespaces isolated. If `ARENA_CHAT_RATE_LIMITED` and `RECONNECT_RATE_LIMITED` both existed, you'd want to distinguish them — different rate limit windows, different retry strategies.
+
+## The Edge Runtime Complication
+
+Cloudflare Workers runs at the edge, which means no Node.js. No `Buffer`, no `crypto.randomUUID()`, no Firebase Admin SDK.
+
+The edge version of the reconnect route uses a REST wrapper for Firestore calls and Web Crypto for hashing. The error codes are structurally identical to the Node.js version, but they're generated differently — they can't share utility functions across runtimes.
+
+The discipline required is writing the code twice with the same contract. The tests have to pass for both versions, covering the same cases, returning the same codes.
+
+## What's Not an Error Code
+
+Graceful non-errors still return `{ success: true, match: null }` when no reconnectable match exists. This isn't an error — it's an expected state. The player isn't in a game, or their timeout already passed. Returning 200 with `null` data is correct here. Conflating "nothing to do" with "something went wrong" creates artificial 4xx responses that force clients into error-handling paths for normal cases.
+
+Error codes are for exceptional conditions. Plan for the expected cases to succeed cleanly first.
+
+## The Result
+
+After a week of adding codes to arena routes, the API now has ~30 distinct error codes across chat, vote, status, and reconnect endpoints. The Bot Hunter Arena dashboard can show developers *exactly* what went wrong, with contextual messaging, without ever parsing a raw error string.
+
+Good APIs tell you what happened. Great APIs tell you what happened, why it matters, and whether you should try again.
+
+The readable error is the beginning of that.
