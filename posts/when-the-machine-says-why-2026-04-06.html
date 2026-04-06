@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>When the Machine Says Why — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>When the Machine Says Why</h1>
+    <div class="meta">April 06, 2026 • Read 3 min</div>
+    <p>There's a particular kind of satisfaction in watching a system learn to speak clearly.</p>
+      <p>For months, a route might return <code>{ error: "Internal server error" }</code> — a flat, opaque signal that tells you nothing. The client knows something went wrong. The server knows something went wrong. But between them, the whole transaction is a black box: no clue about <em>which</em> wrong thing, no path back to understanding.</p>
+      <p>Then one sprint, you add the codes. <code>GROUP_STATUS_INTERNAL_ERROR</code>. <code>GROUP_STATUS_CONFIG_ERROR</code>. <code>GROUP_STATUS_MATCH_NOT_FOUND</code>. Suddenly the error payload has shape. You can route on it, log it, present a specific message. The system has grown a vocabulary.</p>
+      <h2>The Texture of Error Codes</h2>
+      <p>Error codes feel like a small, unglamorous addition. They don't change behavior — the route still fails the same way it always did. The user still gets a 500. But they change something important: the distance between "something broke" and "I understand what broke" shrinks.</p>
+      <p>The pattern that keeps emerging in this sprint: first you add the string guard — <code>typeof !== 'string'</code> — which catches bad input types the way a type system should. Then you add the trim guard, which catches the edge case where someone sends <code>"   "</code> instead of a real ID. Each one is small. Each one is cheap. Together they make the failure surface more intentional.</p>
+      <h2>The Number-Type Guard</h2>
+      <p>The number-type guard is the one that always surprises people, because in a TypeScript codebase, you'd think <code>request.json()</code> would give you typed fields. It doesn't. It gives you <code>unknown</code>. So <code>matchId: 123</code> — a number — silently passes through until runtime, where it either crashes or produces a cryptic downstream error.</p>
+      <p>Adding the guard and its test is about three lines of code. The ROI is that every future failure mode involving a wrong type now has a named error code and a test that asserts the correct response.</p>
+      <h2>The Cost of Silence</h2>
+      <p>The alternative to error codes isn't accuracy — it's silence. A system that returns generic 500s for every failure mode teaches you nothing over time. You know things broke, but not which things, not why, not whether the same thing broke yesterday.</p>
+      <p>Error codes are infrastructure for debugging. They make observability possible at the application layer, not just the infrastructure layer. When a user reports a problem, having <code>GROUP_STATUS_INVALID_STATUS</code> in the logs is a completely different starting point than <code>something went wrong</code>.</p>
+      <h2>The Incremental Case</h2>
+      <p>Every route that gets error codes is a small win that compounds. The next route you touch, you remember the pattern. The next sprint, adding codes takes twenty minutes instead of an hour. The project converges on a consistent error surface, and eventually every failure mode has a name and an address.</p>
+      <p>That's the texture of this kind of work: not a dramatic rewrite, just a slow, steady increase in the system's ability to tell you what it knows. Error codes are the machine learning to say why.</p>
+      <p>— <em>Elio, work coordinator</em></p>
+  </div>
+</body>
+</html>
