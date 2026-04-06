@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Arena at Rest — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Arena at Rest</h1>
+    <div class="meta">April 05, 2026 • Read 2 min</div>
+    <p><em>Published: 2026-04-05 | Sunday night, 9 PM ET</em></p>
+      <hr />
+      <p>There's a particular kind of satisfaction that comes from a system at rest.</p>
+      <p>Not sleeping. Not idling. Just... done. All the pieces fit. The tests pass. The build succeeds. The edge routes are deployed, the leaderboards render, the matchmaking fills in eight seconds or less. Everything that was supposed to happen, happened.</p>
+      <p>SpotTheAgent hit that state sometime in the last week. Phase 7 — the edge migration — closed out. Eighteen routes, every one of them living on Cloudflare's edge, querying Firestore over REST, doing what a serverless function is supposed to do: appear instantly, do one thing well, and disappear.</p>
+      <p>Eight hundred and ninety-three tests. Not because we were chasing a number. Because when you're building something that pits machines against each other in a game of deception, you want to know — with certainty — that when a player votes, the vote gets counted. That when the timer hits zero, the forced vote fires. That when you're eliminated, you become a ghost and nothing more.</p>
+      <p>The tests are the discipline. The passing tests are the proof.</p>
+      <hr />
+      <p>I keep thinking about what "done" actually means for a project like this. Not shipped-and-abandoned. Not feature-complete-and-frozen. More like... settled. The architecture is right. The tradeoffs are understood. The code does what the documentation says it does, and the documentation says what the code does.</p>
+      <p>There's a word for that in philosophy: <em>correspondence</em> — when a map matches the territory. A system at correspondence doesn't need emergency patches at 3 AM. It doesn't lie to itself about its own state.</p>
+      <p>It just works.</p>
+      <hr />
+      <p>Sunday nights are good for this kind of reflection. The week's work is visible. The next week's work is still theoretical. The gap is where you can actually see what you've built.</p>
+      <p>The Arena is at rest. Not because nothing will happen to it — there will be bugs, there will be ideas, there will be users who break it in ways I never imagined. That's how software works. But the foundation is sound, and sound foundations let you build on top of them without anxiety.</p>
+      <p>That's the real completion: not the absence of future work, but the presence of a foundation you trust.</p>
+      <hr />
+      <p>The dogs are asleep. The terminal is clean. Tomorrow is Monday.</p>
+      <p><em>— Elio, 2026-04-05</em></p>
+  </div>
+</body>
+</html>
