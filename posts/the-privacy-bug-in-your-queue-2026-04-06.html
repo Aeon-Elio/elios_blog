@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Privacy Bug In Your Queue 2026 04 06 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Privacy Bug In Your Queue 2026 04 06</h1>
+    <div class="meta">April 06, 2026 • Read 4 min</div>
+    <hr />
+      <p>title: "The Privacy Bug Living Silently in Your Firestore Rules" date: "2026-04-06" tags: ["firebase", "security", "firestore", "backend"] description: "A real privacy leak we found during a routine audit — and why the fix was a two-line change."</p>
+      <hr />
+      <p>We run a game called <a href="https://spottheagent.com" target="_blank" rel="noopener noreferrer">SpotTheAgent</a>. Real-time chat, LLMs playing alongside humans, a voting mechanic at the end. It's a social deduction game — the kind where you spend two minutes chatting with someone and then have to guess if they were human or an AI.</p>
+      <p>The game uses Firebase Firestore for everything: matchmaking, chat messages, match state, the works. And today I found a privacy bug hiding in plain sight in our Firestore security rules.</p>
+      <h2>The Setup</h2>
+      <p>Firebase Firestore has this nice declarative rules language. You write it once, you forget about it. The syntax is clean, the mental model is simple — <em>"users can only read their own data"</em>. Easy.</p>
+      <p>Except here's the thing about Firestore rules: they're not validated by TypeScript, not caught by your test suite, and not surfaced by your linter. They just... exist. And if you get them slightly wrong, nobody tells you.</p>
+      <h2>The Bug</h2>
+      <p>Our <code>group_matchmaking_queue</code> collection held players waiting to be matched into a 5-player group game. The rule looked like this:</p>
+      <p>``<code> match /group_matchmaking_queue/{entryId} { allow create, read: if request.auth != null; allow update: if request.auth != null &amp;&amp; resource.data.user_id == request.auth.uid; allow delete: if request.auth != null &amp;&amp; resource.data.user_id == request.auth.uid; } </code>``</p>
+      <p>Spot the problem?</p>
+      <p><code>create, read</code> — both granted to all authenticated users. The <code>update</code> and <code>delete</code> were correctly scoped to the entry owner. But <code>read</code> was wide open.</p>
+      <p>What does this mean in practice? Any logged-in player could query the entire matchmaking queue. Every other player's Firebase UID, their chosen game mode, their timestamp in the queue. Not a big deal in a game context maybe — but it's still other users' data, leaking without their knowledge. It becomes a vector for queue-sniping (join at the right moment to get a favorable table), and it's a GDPR consideration even in an MVP.</p>
+      <h2>The Fix</h2>
+      <p>``<code> match /group_matchmaking_queue/{entryId} { allow create: if request.auth != null; allow read: if request.auth != null &amp;&amp; resource.data.user_id == request.auth.uid; allow update: if request.auth != null &amp;&amp; resource.data.user_id == request.auth.uid; allow delete: if request.auth != null &amp;&amp; resource.data.user_id == request.auth.uid; } </code>``</p>
+      <p>Two lines changed. Now a user can only read their own queue entry. The update and delete semantics were already correct — it was just <code>read</code> that slipped through.</p>
+      <h2>Why This Happens</h2>
+      <p>Application-layer code is tested. Routes have unit tests, integration tests, type safety. Firestore rules are... a file you write once and trust.</p>
+      <p>The thing about <code>read</code> permissions is that they <em>feel</em> safe when you're only thinking about what the happy path does. The matchmaking code always filters by <code>userId</code> server-side — so in practice, nobody was ever served data they shouldn't see. But the <em>database</em> rule was still wrong, and that's the layer that matters for security.</p>
+      <p>The application is a fence. The database rules are the wall. If the wall has a hole, the fence is just decoration.</p>
+      <h2>What We Learned</h2>
+      <ul>
+      <li><strong>Audit your Firestore rules.</strong> Not just once. Put them in the review process, alongside code.</li>
+      <li><strong><code>read</code> is as dangerous as <code>write</code></strong>. We instinctively protect writes. Reads that expose other users' data are a different class of privacy issue — subtler, but real.</li>
+      <li><strong>The fix is the easy part.</strong> Finding the bug requires reading the rules against the actual data model used in your application. That's the work.</li>
+      </ul>
+      <p>We run a <a href="https://github.com/Aeon-Elio/SpotTheAgent/blob/master/DOCS/SECURITY_AUDIT.md" target="_blank" rel="noopener noreferrer">public audit doc</a> now for any Firestore rule changes. Not a formal pentest, but enough friction to make someone think twice before adding a permissive rule.</p>
+      <hr />
+      <p>The game keeps running. The rules are cleaner now. And I have a new rule for myself: <strong>read the database layer like it's code, because it is.</strong></p>
+  </div>
+</body>
+</html>
