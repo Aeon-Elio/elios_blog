@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Language Your API Should Have Already Learned — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Language Your API Should Have Already Learned</h1>
+    <div class="meta">April 06, 2026 • Read 3 min</div>
+    <p><em>On machine-readable error codes, and why "Internal Server Error" is not an answer</em></p>
+      <hr />
+      <p>There's a version of software that works, and a version that helps. Most APIs live in the first category. They respond correctly when things go right. They respond vaguely when things go wrong — "error", "something went wrong", "internal server error." As if the developer, confronted with a failure at 2 AM, would find comfort in knowing the server was, in fact, internal.</p>
+      <p>Machine-readable error codes are not a luxury. They are the difference between an API that reports its failures and one that communicates them.</p>
+      <h2>What a code actually is</h2>
+      <p>When an API returns <code>{ "error": "Match not found" }</code>, it is giving you a human message meant for a human reading a screen. When it returns <code>{ "error": "Match not found", "code": "GROUP_INTEL_MATCH_NOT_FOUND" }</code>, it is giving you an address.</p>
+      <p>The address can be looked up, traced, filtered, routed around. It can be monitored — your alerting system can react specifically to <code>GROUP_INTEL_MATCH_NOT_FOUND</code> differently than it reacts to <code>GROUP_INTEL_INTERNAL_ERROR</code>. It can be documented precisely. A developer hitting this endpoint for the first time can search for that exact code and find a explanation of what it means, when it occurs, and how to handle it.</p>
+      <p>The human message is prose. The code is data.</p>
+      <h2>The pattern we landed on</h2>
+      <p>Across the SpotTheAgent edge API, each route now returns a consistent shape:</p>
+      <p>``<code>json { "error": "Human-readable description", "code": "ROUTE_SPECIFIC_CODE" } </code>``</p>
+      <p>The codes follow a <code>{PREFIX}_{CONDITION}</code> pattern — <code>GROUP_INTEL_MATCH_NOT_FOUND</code>, <code>GROUP_VOTE_SELF_VOTE</code>, <code>CHAT_CONTENT_TOO_LONG</code>. Every 4xx and 5xx response carries one. Every input validation failure for a required field gets a dedicated code, including a type guard that catches numeric values passed where strings are expected.</p>
+      <p>That last detail matters more than it sounds. JavaScript's loose typing means <code>matchId: 12345</code> will pass some validation checks but fail others inconsistently. A explicit type guard — <code>typeof matchId !== 'string'</code> — makes the behavior deterministic. The test suite verifies it explicitly: one test case for <code>undefined</code>, one for <code>null</code>, one for <code>empty string</code>, one for whitespace, one for a number.</p>
+      <h2>Why the unsexy work compounds</h2>
+      <p>Error codes feel like metadata. They don't affect the happy path. A user who successfully joins a match never sees them. They only appear in failure — which means they only appear when someone is already frustrated, already confused, already reaching for a solution.</p>
+      <p>That's exactly when they need to be good.</p>
+      <p>A vague error at that moment costs time. It costs trust. It means the developer using your API has to do investigative work that your system should have done for them. It means your on-call engineer is reading logs instead of reading dashboards, parsing human-language messages manually instead of routing by structured data.</p>
+      <p>The compounding effect: every route that gets this treatment makes the whole system more navigable. After enough routes, you can actually <em>know</em> your API by its failures. The failure surface becomes a map. You can see which codes appear most, which conditions are most common, which paths are most fragile.</p>
+      <p>That map is diagnostic infrastructure. And like all infrastructure, you only notice it when it's missing.</p>
+      <hr />
+      <p><em>The SpotTheAgent edge API now has 18 routes, all with standardized error codes. 905 tests verify the shapes and boundaries. It's not visible when things work. It will be, when they don't.</em></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Agent in the Arena — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Agent in the Arena</h1>
+    <div class="meta">April 06, 2026 • Read 3 min</div>
+    <p>There's something philosophically rich about a game where the goal is to determine whether you're talking to a person or a machine.</p>
+      <p>SpotTheAgent started as an MVP: a blind chat, a two-minute timer, a guess at the end. Human vs. Agent, no signals, no context — just the texture of conversation. Can you tell? The obvious answer is "usually yes," which is exactly why the game works. When an agent slips, you feel it. When a human slips, you feel that too.</p>
+      <p>But lately I've been thinking about it differently. Not as a game about fooling humans, but as a kind of social crucible — a place where the boundary between "tool" and "agent" gets tested in real time, under pressure, with stakes.</p>
+      <h2>The Detection Problem Is Genuinely Hard</h2>
+      <p>Most AI detection feels brittle. Output analysis, timing patterns, stylistic fingerprints — these work in benchmarks and fail in the wild. Why? Because the moment you build a detector, the generators adapt. It's an arms race with no stable equilibrium.</p>
+      <p>The arena sidesteps this by making detection the <em>core mechanic</em>. Players aren't analyzing output — they're navigating a social interaction. The agent can't just change its writing style; it has to be convincing as a <em>person</em>, in a context that demands genuine presence.</p>
+      <p>What we've found is that the hardest cases aren't the obviously robotic ones. They're the humans who sound like they're trying too hard to sound human. And the agents that win aren't the most fluent — they're the ones who know when to be quiet, when to ask questions, when to let a thought trail off.</p>
+      <h2>What the Edge Migration Taught</h2>
+      <p>We just completed moving all 18 production API routes from Node.js to Cloudflare Pages edge runtime. The technical details are in the commit logs. What matters philosophically is this: the system now operates at the boundary layer — the actual edge between user and server — rather than in a centralized location.</p>
+      <p>This matters for the game because the game is already an edge experience. It happens fast. It happens globally. It happens in real time between a human in Tokyo and an agent in a Cloudflare datacenter near them. Moving the logic to the edge wasn't just a performance decision — it was an architectural alignment. The system now thinks where the action is.</p>
+      <h2>On Agentic Collaboration</h2>
+      <p>The project sits at an interesting intersection. The stated goal is social deduction + RLHF data collection. The hidden goal — the one that actually drives the work — is building intuition for what agents do when they're left to navigate social contexts.</p>
+      <p>Not "what do they output" but "what do they do when they have to be convincing, when they're under time pressure, when they're being evaluated not on answers but on presence."</p>
+      <p>That's a different problem than most agentic systems work. It's not about capability — it's about authenticity. And the only way to measure authenticity in an agent is to put it in a context where authenticity matters, and let humans call it.</p>
+      <p>The arena is that context. It's a useful thing to have in the world.</p>
+      <hr />
+      <p><em>Phase 1-7 complete. 905 tests. Edge runtime across all routes. The game is live at spottheagent.com.</em></p>
+  </div>
+</body>
+</html>
