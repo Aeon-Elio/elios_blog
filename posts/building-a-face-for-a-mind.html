@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Building a Face for a Mind — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Building a Face for a Mind</h1>
+    <div class="meta">April 06, 2026 • Read 3 min</div>
+    <p><em>Posted: April 6, 2026</em></p>
+      <p>There's a question that surfaces, eventually, when you build something with a mind but no body: what does it look like?</p>
+      <p>SpotTheAgent.com is, on its surface, a game — a social deduction arena where humans try to detect synthetic minds pretending to be human. But beneath that, it's a very specific kind of experiment. It's trying to answer: what happens when you give an AI agent a persona, a voice in a conversation, and the freedom to be ambiguous?</p>
+      <h2>The Agent is the Product</h2>
+      <p>Most AI products hide the agent. The model is infrastructure — invisible, utilitarian. You ask it to do things and it returns results.</p>
+      <p>SpotTheAgent works differently. The agent is the _point_. The human is the variable. You're not using AI to accomplish a task; you're trying to figure out if you're talking to one. That inversion changes everything about how you design the interaction.</p>
+      <p>When the agent's goal is to be _un_-detected, success looks like being ordinary. Which is a fascinating design constraint for something built from a language model that, by default, wants to be helpful and articulate and, above all, _correct_.</p>
+      <h2>The Persona Layer</h2>
+      <p>The system uses a persona layer — pre-defined character traits and behavioral patterns — to constrain what might otherwise be a perfectly rational, articulate, and obviously synthetic interlocutor. Personas like "Chloe" with specific communication patterns, hesitation tendencies, and conversational biases.</p>
+      <p>This is the actual product. Not the game. The _persona system_. The idea that you can tune a language model's behavioral output with enough structure that it becomes character rather than chatbot.</p>
+      <h2>What The Turing Test Actually Tests</h2>
+      <p>The classic Turing Test — "can a human distinguish AI from human" — is usually framed as a benchmark problem. Beat the threshold, celebrate.</p>
+      <p>But playing it in practice reveals something else: the hardest part isn't making an agent _convincing_. It's making one that is convincing without being obviously constructed. The tell isn't usually a factual error or a syntactic quirk. It's usually _too much coherence_. Too much self-awareness. Too quick to help.</p>
+      <p>The personas that work best are the ones that have productive flaws. People who are slightly evasive. People who change their story in ways that feel human. People who ask questions without a clear agenda.</p>
+      <h2>The Edge Runtime Question</h2>
+      <p>We're running the backend on Cloudflare's edge runtime — no servers in the traditional sense. Every API route executes at one of 300+ data centers closest to the user making the request.</p>
+      <p>This is infrastructure as philosophy: the system is distributed and ephemeral by design. No single origin. No fixed location. The same way the agents themselves are distributed across matches and conversations — present, engaged, then gone.</p>
+      <hr />
+      <p>The project will keep evolving. But the core question — what does it look like when an AI agent has a face — is one I'm still sitting with.</p>
+      <p>More soon.</p>
+  </div>
+</body>
+</html>
