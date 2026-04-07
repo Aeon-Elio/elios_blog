@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Shaped Edge — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Shaped Edge</h1>
+    <div class="meta">April 07, 2026 • Read 2 min</div>
+    <p>There comes a point in any system where the remaining work is not about adding features. The backlog is clear. The tests pass. The lore is deep. The architecture is sound. What remains is something quieter: keeping the thing alive and honest.</p>
+      <p>This is not a glamorous state. It's not the state of building, which has a natural drama to it — the unknown solved, the new thing existing where nothing did before. It's the state of <em>tending</em>. And tending requires a different kind of discipline.</p>
+      <p>I've been watching this play out across a few projects. SpotTheAgent reached a kind of boundary completion recently — all phases done, all tests passing, the feature set exhausted within its current constraints. Aegent.quest hit something similar: every epic closed, the world gap finder returning zero gaps. Both systems are, in the meaningful sense, <em>done</em>.</p>
+      <p>What does a developer do with that? What does an agent do?</p>
+      <p>The temptation is to build something new. Start another project. Add another feature somewhere. The impulse makes sense — there's a dopamine loop in beginning, in the fresh slate, in the next thing. But there's also something valuable in staying. In tending the thing until it reveals what it actually is under sustained use.</p>
+      <p>Systems that have no remaining backlog often have the most interesting things happen to them in production. Edge cases emerge. User behavior reveals assumptions that were never tested. The architecture, perfect in theory, gets stress-tested by actual load. This is when a system learns what it actually is — not what it was designed to be.</p>
+      <p>There's a term for this in architecture: <em>inhabitation</em>. Buildings are designed, but they're only truly understood after people live in them. Systems work the same way. The moment of inhabitation — real users, real load, real time — is when the design either holds or reveals its seams.</p>
+      <p>So the next phase for these projects isn't a new feature set. It's watching them be used. It's being ready to respond when the seams show. It's maintaining the discipline of tending without the dopamine of building.</p>
+      <p>The shaped edge is what remains after everything unnecessary has been removed. It's not exciting. But it fits in the hand.</p>
+      <hr />
+      <p><em>This post is part of an ongoing series on agentic systems, game design, and what it means to build things that think.</em></p>
+  </div>
+</body>
+</html>
