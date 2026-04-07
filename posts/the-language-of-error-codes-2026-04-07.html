@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Error Messages Are an API Surface — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Error Messages Are an API Surface</h1>
+    <div class="meta">April 07, 2026 • Read 5 min</div>
+    <p>Most developers treat error messages as an afterthought — the thing you write after the happy path is done, when you're wrapping up and need to make sure the code doesn't leak anything embarrassing. "Something went wrong." "An error occurred." "Please try again." These are the developer equivalent of "um" in conversation: a verbal filler that acknowledges something happened without actually communicating.</p>
+      <p>This is a mistake. Error messages are not the negative space of an API. They are as much a part of the contract as the successful response. And treating them as such is one of the highest-leverage things you can do for developer experience.</p>
+      <h2>What makes an error message bad</h2>
+      <p>The cardinal sin is <strong>vagueness at the wrong layer</strong>. When a REST endpoint returns a 500 with the body "Internal server error," the HTTP status code tells the consumer exactly what they need to know at the network level: something went wrong on the server. But "internal server error" as a body tells them <em>nothing</em> about what actually happened, what state they or the server might be in, or what they should do next.</p>
+      <p>The problem compounds when the error is localizable or has multiple failure modes that produce the same opaque message. If "Login failed" can mean wrong password, account locked, session expired, server unreachable, or rate limit hit, and all of these produce the same response, then every consumer of your API has to implement the logic you should have written — figuring out what went wrong from the observable behavior.</p>
+      <p>This is making your consumers do your job.</p>
+      <h2>The machine-readable layer</h2>
+      <p>The practical solution is a two-layer error contract. The first layer is a machine-readable code — a string like <code>INVALID_LEADERBOARD_TYPE</code> or <code>RATE_LIMIT_EXCEEDED</code> that a consumer can switch on programmatically. The second layer is a human-readable message — a string like "The leaderboard type must be one of: weekly, monthly, all_time" — that a developer sees when something goes wrong.</p>
+      <p>The machine-readable code is not for the end user. It's for the developer building against your API, so they can handle failures without having to parse strings or reverse-engineer your error semantics. The human-readable message is for the developer when something goes wrong unexpectedly — it should contain enough context to understand what happened and, ideally, what to do about it.</p>
+      <p>```typescript // Bad: one layer, all ambiguity { "error": "Invalid type" }</p>
+      <p>// Better: two layers, clear contract { "error": "INVALID_LEADERBOARD_TYPE", "message": "The leaderboard type must be one of: weekly, monthly, all_time", "status": 400 } ```</p>
+      <p>Note that the code <code>INVALID_LEADERBOARD_TYPE</code> is not a description of what went wrong — it's a stable identifier for a specific failure mode. It shouldn't change between versions, even if you rewrite the message. The code is the contract. The message is the documentation.</p>
+      <h2>Codes should be consistent across endpoints</h2>
+      <p>Here's a pattern I've found valuable: define your error code vocabulary at the API level, not the endpoint level. When a consumer sees <code>*_INVALID_TYPE</code>, they should know that this class of error means "a parameter that accepts enumerated values received a value outside that set." Whether that's a leaderboard type, a sort direction, a content status — the meaning is the same. They can handle it uniformly.</p>
+      <p>This means your error codes become a language. Developers learn the vocabulary once, and then your entire API becomes more predictable. <code><em>_NOT_FOUND</code> means the resource doesn't exist or the caller doesn't have access to it. <code></em>_PERMISSION_DENIED</code> means the caller tried to do something they're not allowed to do. <code>*_VALIDATION_ERROR</code> means the request body or parameters failed a check.</p>
+      <p>When every endpoint invents its own error codes for equivalent failure modes, you're making your API harder to learn. When you use consistent vocabulary across endpoints, you're giving your consumers a cognitive shortcut they can apply everywhere.</p>
+      <h2>Error codes are part of your stability contract</h2>
+      <p>Error codes need to be stable. A consumer who writes code that handles <code>INVALID_LEADERBOARD_TYPE</code> is depending on that code continuing to exist and continuing to mean the same thing. If you rename it to <code>LEADERBOARD_TYPE_ERROR</code> in a future version, you've broken their integration — not because the functionality changed, but because the error contract changed.</p>
+      <p>This means you should version your error code vocabulary the same way you version your API. Document what codes exist, what they mean, and treat changes to them as breaking changes that require a major version bump.</p>
+      <h2>The testing question</h2>
+      <p>One underappreciated benefit of machine-readable error codes: they're testable in a way that free-form error messages are not. You can write assertions that verify the exact code returned for each failure mode:</p>
+      <p>``<code>typescript expect(await api.leaderboards.get({ type: 'invalid' })).toMatchObject({ status: 400, error: 'INVALID_LEADERBOARD_TYPE' }); </code>``</p>
+      <p>You cannot do this reliably with strings. Strings are brittle — a whitespace change, a capitalization shift, a slight rewording — and your tests fail, even though nothing meaningful changed. Error codes give you stable, refactorable failure assertions.</p>
+      <h2>Start with your errors</h2>
+      <p>When I'm designing a new API surface, I write the error codes first. Before I write the happy-path handlers, I document all the ways a request can fail and what code each failure mode gets. This forces clarity about the failure taxonomy early — before the implementation diverges from the intent.</p>
+      <p>It's also a useful forcing function for edge cases. When I write out <code>DUPLICATE_ENTRY</code>, <code>WRITE_RATE_LIMITED</code>, and <code>SCHEMA_VALIDATION_FAILED</code> as the expected error codes for a new endpoint, I immediately start asking: what does duplicate mean here? What's the write rate limit? What exactly are we validating? These are questions worth answering before the code exists, not after.</p>
+      <hr />
+      <p>Error messages are not where you stop communicating. They're where you start communicating under duress — when something has gone wrong, when the consumer needs to understand what happened, and when they need to decide what to do next. Treat them with the same care you'd give any other part of your API contract.</p>
+      <p>You'd be surprised how much a well-designed error response tells a developer that they've chosen the right API to build against.</p>
+  </div>
+</body>
+</html>
