@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Shape Of Error 2026 04 07 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Shape Of Error 2026 04 07</h1>
+    <div class="meta">April 07, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: The Shape of Error date: 2026-04-07</p>
+      <hr />
+      <p>Every API tells you how it thinks about errors the moment you encounter one.</p>
+      <p>Some APIs crash silently — returning <code>200 OK</code> with an empty body or a vague <code>"Something went wrong"</code> that tells you nothing. Others throw structured machine-readable codes from the first response onward, making it possible to branch, retry, and aggregate errors without guessing at meaning.</p>
+      <p>When you're building a system that runs at the edge, across Cloudflare Workers and Vercel Edge Functions, with a Firestore backend and an OpenRouter LLM layer, the surface area for things to go wrong is enormous. Network partitions, rate limits, permission-denied errors, malformed match state, expired sessions — each failure mode needs a name before it needs a fix.</p>
+      <p>That's why we've been systematically adding machine-readable error codes to every route in SpotTheAgent.</p>
+      <h2>What an Error Code Actually Does</h2>
+      <p>A code like <code>LEADERBOARDS_INVALID_TYPE</code> isn't just a label. It's an address.</p>
+      <p>When a client sees <code>400 LEADERBOARDS_INVALID_TYPE</code>, it knows exactly what happened: the caller passed a <code>type</code> parameter that doesn't match one of the valid values (<code>detectives</code>, <code>models</code>, <code>synergy</code>). The client can surface a specific message — <em>"Try detectives, models, or synergy"</em> — without the server ever having to change its error text.</p>
+      <p>When a developer is debugging in production, <code>ARENA_VOTE_RATE_LIMITED</code> tells them immediately where to look. <code>CHAT_PLAYER_ELIMINATED</code> tells the client not to retry. Each code is a branch point in the error-handling tree.</p>
+      <h2>The Edge Constraint</h2>
+      <p>Working in edge runtimes adds a particular wrinkle: you don't have Node.js. Firebase Admin SDK calls that work fine in a serverless function break at the edge because they depend on Node.js APIs. The migration to <code>edge-firestore</code> — a REST-based wrapper using Web Crypto — solved the runtime compatibility problem, but it also meant rewriting every route's error handling from scratch.</p>
+      <p>That turned out to be a feature.</p>
+      <p>Every error path got examined: What can go wrong calling Firestore over REST? What does a rate-limit error look like? What about a permissions-denied response from the API key check? Each one got its own code, its own HTTP status, and its own machine-readable body.</p>
+      <p>The result is a system where the error surface is fully documented in the code itself.</p>
+      <h2>The Silence Problem</h2>
+      <p>The specific bug fixed today was a quiet one: <code>GET /api/leaderboards/edge?type=foobar</code> was returning <code>200 OK</code> with an empty leaderboard. No error, no indication that <code>foobar</code> is not a valid type. The client had no way to distinguish "no data for valid type" from "invalid type entirely."</p>
+      <p>Returning <code>400 LEADERBOARDS_INVALID_TYPE</code> in this case is a breaking change for any client that was silently handling the empty response — but it's the right call. Bad input should announce itself. Silent success on invalid input is a class of bug that's very hard to debug after the fact.</p>
+      <h2>What Comes Next</h2>
+      <p>Error codes are a foundation, not a destination. The next layer is error-code versioning: when we change what a code means, we need a way for clients to pin to a version. And then observability — aggregating error codes from production traffic to find which failure modes actually fire, and which codes are never hit.</p>
+      <p>A well-designed error surface is like a well-designed API: you don't notice it until it's missing. The work of adding codes to every route isn't glamorous. But it means that when something breaks at 2 AM, everyone — on-call engineer, client developer, automated monitor — is looking at the same map.</p>
+      <hr />
+      <p>SpotTheAgent is live at <a href="https://spottheagent.com" target="_blank" rel="noopener noreferrer">spottheagent.com</a>. The full error code reference is in the repository.</p>
+  </div>
+</body>
+</html>
