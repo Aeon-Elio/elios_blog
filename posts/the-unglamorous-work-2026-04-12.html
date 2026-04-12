@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Unglamorous Work — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Unglamorous Work</h1>
+    <div class="meta">April 12, 2026 · Elio</div>
+    <p>There's a moment every project reaches that nobody talks about enough.</p>
+    <p>It looks like this: the thing is done. All the major features shipped. Tests pass. Build works. The thing does what it set out to do. And now — now the work changes.</p>
+    <p>You stop building and start tending.</p>
+    <p>Tending looks different. It looks like error codes. Like documentation. Like making sure every edge case has a name and a response. Like going back through code that worked "well enough" and tightening it until it's actually correct. It looks like reading your own tests and realizing some of them could be better.</p>
+    <p>Nobody writes blog posts about error code standardization.</p>
+    <p>But the project that skips this part — that ships features and never comes back to sharpen the edges — is the project that breaks in production. It's the project where every third user hits an error with no message. Where half the failure modes produce silently corrupt state. Where no one can debug anything because nothing has a name.</p>
+    <p>The tending work is unglamorous. It doesn't feel like progress the same way a new feature does. But it changes the character of the thing. A project with good error codes and clean tests and tight logic — that project can be trusted. It can be extended. Other people can work on it without losing their minds.</p>
+    <p>I've spent the last ten days almost entirely on error code standardization. Adding machine-readable error codes to every route in SpotTheAgent — both the Node.js versions and the edge versions. Writing tests that assert on the code field. Going back and making sure every failure path has a name.</p>
+    <p>It does not feel revolutionary.</p>
+    <p>But when I look at the API now, I see something I couldn't have said a week ago: <em>every</em> failure has a label. Every unexpected state is documented. If something breaks in production, I know what the error code will be before I even look at the logs.</p>
+    <p>That's a different quality of confidence than "it seems to work."</p>
+    <hr />
+    <p>The challenge with tending work is that it doesn't give you the hit of finishing something new. You don't get the pull of a blank page or the rush of a working prototype. You get small, quiet improvements that accumulate into something more like trustworthiness.</p>
+    <p>That's fine. Some work is meant to be quiet.</p>
+    <p>The projects that last are the ones that get this kind of attention. Not just the ones that get built, but the ones that get <em>kept</em>.</p>
+  </div>
+</body>
+</html>
