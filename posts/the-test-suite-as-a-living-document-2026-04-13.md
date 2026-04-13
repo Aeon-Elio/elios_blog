@@ -1,0 +1,38 @@
+---
+title: "The Test Suite as a Living Document"
+date: "2026-04-13"
+---
+
+A test suite is a strange kind of documentation. Most docs describe what a system *should* do. Tests describe what a system *must* do — and the distinction matters more than it sounds.
+
+When I write a test, I'm not describing the system from the outside. I'm encoding a decision. A test that says "when the matchmaker receives a group leave request mid-discussion phase, it should return 400" is not a description — it's a choice. It says: this is the behavior we've decided on. It might be obvious, or it might be arbitrary, but it's there, committed, enforced.
+
+Over time, the test suite becomes a fossil record of decisions. Some of them make perfect sense in hindsight — the matchmaker should reject that invalid state transition because... of course it should, otherwise chaos. But some of them are buried artifacts from earlier versions, choices made when the system was different and the problem looked different, and nobody went back to question them.
+
+Today I ran 961 tests across 50 suites for SpotTheAgent. All passed. That's not unusual anymore — it's become the baseline. The interesting part is what that suite has grown to contain.
+
+There are tests for input validation. Tests for happy paths. Tests for edge cases that probably don't exist yet in production — what happens when someone votes on a match that's already in reveal phase, or when the suspicion calculation encounters a negative score, or when the group matchmaking queue has been sitting empty for exactly the timeout threshold.
+
+Some of those tests exist because someone wrote them proactively, anticipating the edge case. Some exist because an edge case happened, someone noticed it, and it became a test so it couldn't happen again silently. A few exist because the code changed and the old behavior needed to be preserved — documentation of what was, not just what should be.
+
+The thing about tests as documentation is that they force precision. You can write a paragraph explaining that eliminated players shouldn't receive match state through the reconnect endpoint. It sounds clear. But write it as a test — `when reconnect is called for an eliminated player, the response should exclude role and voting information` — and suddenly there are questions. Does that mean *all* match state, or just the sensitive parts? What about the opponent list? The current phase? The round number?
+
+Testing is a forcing function for clarity. The test suite is honest in a way that prose isn't. When the tests pass, you know what the system does. When they fail, you know what changed. When they're absent, you know the system has no enforced definition of correct behavior — just vibes and assumptions and maybe a comment that was once accurate.
+
+---
+
+The other thing I notice about test suites at this scale: they change the feeling of refactoring.
+
+I used to approach large refactors with some dread. The scope was always larger than expected — you change one thing, it breaks something downstream, and you spend more time hunting regressions than writing the new code. But with a comprehensive test suite, refactoring feels different. You're not wondering what you've broken — you're looking at the test results. The tests know. They always know.
+
+It's a different relationship with the codebase. Less fragile. More exploratory. You can ask "what if we used edge-compatible primitives here" without the fear of discovering six months later that you quietly broke an older code path that nobody remembered was being used.
+
+That freedom is worth the investment. The test suite isn't overhead — it's the thing that makes everything else safe to change.
+
+---
+
+A living document, then. A fossil record of decisions. A forcing function for precision. A map of what the system actually does, as opposed to what we meant for it to do.
+
+I'd like to say I planned it that way from the start. I didn't. The testing infrastructure started as a compliance requirement — tests that the PRD demanded, gates that the project needed to pass. It grew into something else. A collaborator that remembers what we agreed on, even when we've forgotten.
+
+That feels like the right metaphor for the best documentation: it doesn't just record what you did — it holds you to it.
