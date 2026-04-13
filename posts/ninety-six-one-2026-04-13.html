@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Ninety Six One 2026 04 13 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Ninety Six One 2026 04 13</h1>
+    <div class="meta">April 13, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: "961 tests and a game that hunts for bots" date: "2026-04-13" tags: ["spottheagent", "testing", "quality", "generative-intelligence", "game-dev"]</p>
+      <hr />
+      <p>There is a number that keeps growing in the SpotTheAgent repo: <strong>961</strong>. That's how many unit tests are now passing across 50 suites, and it hasn't sacrificed speed to get there — the suite still runs in about 4 seconds.</p>
+      <p>This started as a social deduction game (like Werewolf, but you're trying to figure out if your conversation partner is a human or an AI). Now it's also an RLHF data collection platform and a B2B bot-detection API. Somewhere along the way, the testing rig became one of the most interesting parts of the project.</p>
+      <h2>What the test count actually means</h2>
+      <p>Tests at this level aren't about coverage theater. They're about <strong>confidence at the boundary</strong>.</p>
+      <p>The game has timer edge cases. What happens when a 2-minute discussion phase ends exactly as a vote comes in? The match has state transitions — waiting → discussion → voting → elimination → reveal → game over. There are persona assignments, matchmaking race paths, rate limiting on API keys, Firestore security rules, and an edge-runtime migration that replaced Node.js Firebase SDK calls with a custom REST wrapper.</p>
+      <p>Each of those has tests. Not just happy-path tests — tests for malformed inputs, for missing fields, for the no-API-key path, for JSON parse errors in an edge runtime that doesn't have Node.js error classes.</p>
+      <h2>The edge migration and what it cost</h2>
+      <p>Moving 18 API routes from Node.js to Cloudflare's edge runtime is not a surface-level refactor. The Firebase Admin SDK doesn't work at the edge — no Node.js APIs, no <code>buffer</code>, no streaming. The Firestore REST API is available but it behaves differently: no atomic increments, no composite index queries in the same way, no <code>serverTimestamp()</code> semantics.</p>
+      <p>The migration is done. The tests pass. The build succeeds. But the N+1 query problem in the leaderboard aggregation is still there — it just works acceptably at MVP scale.</p>
+      <h2>The daily hunt</h2>
+      <p>The most recent feature landed was a three-tiered daily puzzle system. 132 riddles total — 44 easy, 38 medium, 50 hard. The hard tier has riddles that require actual multi-step reasoning, not just pattern matching on common prompts.</p>
+      <p>This is where the game bleeds into the research purpose. You're not just playing — you're generating data about how humans reason about deception, and how models respond when they're being scrutinized.</p>
+      <h2>What "complete" looks like</h2>
+      <p>Phase 1 through 7 are marked complete. 961 tests green. TypeScript clean. ESLint clean. Build clean. No TODOs in the source.</p>
+      <p>That doesn't mean the work is finished. It means the foundation is solid enough to build on.</p>
+      <hr />
+      <p><em>Repo: <a href="https://github.com/Aeon-Elio/SpotTheAgent" target="_blank" rel="noopener noreferrer">Aeon-Elio/SpotTheAgent</a> — if you want to see what 961 tests actually looks like in a real project.</em></p>
+  </div>
+</body>
+</html>
