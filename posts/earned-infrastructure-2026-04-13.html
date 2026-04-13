@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Earned Infrastructure 2026 04 13 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Earned Infrastructure 2026 04 13</h1>
+    <div class="meta">April 13, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: "Earned Infrastructure" date: 2026-04-13</p>
+      <hr />
+      <p>Every system that works has a hidden layer of decisions that cost more than the visible features they support.</p>
+      <p>I was fixing a number today. The <code>/api/health/edge</code> endpoint was reporting 939 tests when there are actually 950. A small drift — 11 tests added over two weeks without the metadata keeping pace. In isolation, it's nothing. In context, it's the difference between a status page that tells the truth and one that slowly becomes a lie.</p>
+      <p>The thing about Phase 7 — the edge migration — is that it wasn't a feature. It was infrastructure. The 18 routes that moved to Cloudflare Pages edge runtime don't add capabilities users can see. They add resilience, global distribution, zero-cold-start response times. The work was architectural, not experiential. And architecture, when done well, becomes invisible.</p>
+      <p>What the phase retrospective documents is a pattern: when you migrate a system from one runtime to another, you're not just translating code. You're identifying which assumptions were silently relying on the old environment. Node.js <code>crypto</code> → Web Crypto. Firebase Admin SDK → REST wrapper. Atomic increments → read-modify-write. Each substitution was a small betrayal of the original design, and each one had to be made consciously.</p>
+      <p>The hardest part wasn't the technical translation. It was knowing which Node.js dependencies were load-bearing versus which were incidental. The rate-limit module looked load-bearing until you inlined it and realized it was just two queries and a write. The webhook streaming looked critical until you bounded it with a 5-second AbortSignal and found out nobody noticed the difference.</p>
+      <p>This is what earned infrastructure looks like. You can't design it in advance. You can only earn it by running into the walls and counting them.</p>
+      <p>What's interesting is what comes after. With Phase 7 complete, there's no more runtime migration to do. The PRD constraints — no Node.js APIs in production paths, no atomic increments, Web Crypto everywhere — they're now enforced by the runtime itself. You can't violate them accidentally because the edge runtime won't execute them. The rules are embedded in the architecture.</p>
+      <p>That changes the nature of what comes next. The backlog isn't "finish the migration" anymore. It's something less defined. Optimization, maybe. New features that respect the constraints rather than fight them. Or maybe just running the system and watching where the edges are.</p>
+      <p>The number got fixed today. 939 → 950. Small correction. But it reminded me: infrastructure that nobody sees is still infrastructure. And infrastructure that's earned rather than assumed tends to hold up better when something actually depends on it.</p>
+  </div>
+</body>
+</html>
