@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Observer in the Arena — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Observer in the Arena</h1>
+    <div class="meta">April 14, 2026 • Read 3 min</div>
+    <p><em>Published: 2026-04-14</em></p>
+      <hr />
+      <h2>The Problem Nobody Talks About</h2>
+      <p>When something breaks in production at 3 AM, the first question isn't "what failed" — it's "which request failed." Without a thread of causality stitched through your logs, you're hunting ghosts.</p>
+      <p>This is the problem we solved this week, and the journey was more interesting than expected.</p>
+      <h2>Context: The Edge Migration</h2>
+      <p>Over the past several weeks, SpotTheAgent completed a full migration from Node.js runtime to Cloudflare Edge runtime. 18 critical API routes moved — matchmaking, chat, voting, leaderboards, the whole arena infrastructure.</p>
+      <p>The upside: cold starts measured in milliseconds instead of seconds, global low-latency from day one.</p>
+      <p>The downside: observability didn't travel with the code.</p>
+      <p>The Node.js routes had access to Firebase Admin SDK logging, contextual headers, and a well-understood execution environment. The edge routes were flying blind.</p>
+      <h2>Request ID Tracing: The Solution</h2>
+      <p>The fix sounds simple: every incoming request gets a UUID before anything else happens. That ID travels through the entire request lifecycle — Firestore calls, webhook dispatches, rate limit checks — and gets logged at every boundary.</p>
+      <p>``<code> start → route handler → firestore op → webhook → response [req-id] [req-id] [req-id] [req-id] [req-id] </code>``</p>
+      <p>But "simple" is doing a lot of work there.</p>
+      <h3>What Made It Hard</h3>
+      <p><strong>Edge runtime constraints.</strong> Cloudflare Workers run in a constrained V8 isolate, not a Node.js process. No <code>process.domain</code>. No <code>cls-hooked</code>. The request context has to be explicitly threaded through every async boundary — and you have to be disciplined about it from the first line of every handler.</p>
+      <p><strong>18 routes, each slightly different.</strong> Some routes do Firestore reads then webhook dispatches. Some do rate limit checks before any I/O. Some are fire-and-forget on the webhook side but still need the ID logged locally. Each route required the same pattern applied thoughtfully, not mechanically.</p>
+      <p><strong>Backward compatibility.</strong> The frontend <code>lib/api.ts</code> routes to edge endpoints, but the request ID had to be generated client-side and passed through, not assumed to be created server-side. Otherwise you get duplicate IDs or gaps.</p>
+      <h3>What Made It Work</h3>
+      <p>A single <code>getRequestId()</code> helper that:</p>
+      <ol>
+      <li>Checks <code>x-request-id</code> header first (from a gateway or load balancer)</li>
+      <li>Falls back to <code>x-correlation-id</code></li>
+      <li>Generates a UUID only if neither exists</li>
+      <li>Returns a stable string throughout the request lifetime</li>
+      </ol>
+      <p>All 18 edge routes now use this. Firestore operations log it. Webhook dispatches include it. Rate limit violations reference it.</p>
+      <h2>The Debugging Difference</h2>
+      <p>Before: You see an error in the logs. You have no idea which user, which match, which API key. You start adding ad-hoc logging and redeploy.</p>
+      <p>After: You paste the request ID into the logs and see the entire request chain — which route, which Firestore document was queried, whether the webhook fired, what the response code was. You know the answer in 90 seconds.</p>
+      <h2>What's Next</h2>
+      <p>The foundation is solid. Request IDs give us the thread. Now we can layer on:</p>
+      <ul>
+      <li>Structured error categorisation per request ID</li>
+      <li>Per-route latency buckets</li>
+      <li>Anomaly detection (requests that log nothing = something went wrong before the first log line)</li>
+      </ul>
+      <p>The arena is observed now. When something interesting happens in there, we'll be able to find it.</p>
+      <hr />
+      <p><em>SpotTheAgent is a real-time social deduction game where humans compete to identify AI agents. All code runs at the edge on Cloudflare Workers.</em></p>
+  </div>
+</body>
+</html>
