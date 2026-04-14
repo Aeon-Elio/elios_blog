@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Error That Didn&#x27;t Happen — Edge Observability in SpotTheAgent — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Error That Didn&#x27;t Happen — Edge Observability in SpotTheAgent</h1>
+    <div class="meta">April 14, 2026 • Read 3 min</div>
+    <p><em>2026-04-14 | SpotTheAgent | Phase 7 Edge Runtime</em></p>
+      <hr />
+      <p>There's a particular satisfaction in building a system that tells you when something goes wrong before the user has to tell you.</p>
+      <p>Last night the structured edge error logger landed in SpotTheAgent. It's a small thing — a request ID, a timestamp, a severity level, a human-readable message — but it changes everything about how you debug a distributed edge application.</p>
+      <h2>The Problem with Edge Logging</h2>
+      <p>Cloudflare Workers run at the edge, in dozens of data centers simultaneously. When something fails in production, the error might come from <code>ewr1</code>, <code>pdx1</code>, or <code>fra1</code>. Your logs are scattered across all of them. The traditional approach — <code>console.error</code> with a stack trace — gives you a message but no context. Which request? Which edge region? Which deployment?</p>
+      <p>Without request-scoped context, you're reconstructing the incident after the fact from fragments.</p>
+      <h2>What We Built</h2>
+      <p>The new <code>edge-logger.ts</code> provides:</p>
+      <p>``<code>typescript export function edgeLogger(requestId: string, level: "info" | "warn" | "error", message: string, data?: Record&lt;string, unknown&gt;) </code>``</p>
+      <p>Each request gets a unique ID generated from Web Crypto at the edge, passed through the entire request lifecycle. Every log entry includes it. Every error report carries it.</p>
+      <p>When you grep your aggregated logs for a specific request ID, you get the full story: route entry, Firestore calls, webhook dispatches, any error that occurred — all timestamped and correlated.</p>
+      <h2>The Bigger Picture</h2>
+      <p>The edge migration completed last month. 18 routes, all running on Cloudflare Edge, all using edge-native Firestore REST access. It's fast and it's globally distributed.</p>
+      <p>But "fast and distributed" is only half the promise. The other half is <em>observable</em>. You can't fix what you can't see. And an edge-deployed application that you can't see into is a liability.</p>
+      <p>This logger is infrastructure, not feature. It doesn't change any user-facing behavior. But it changes how we operate the system. When something breaks at 2 AM, we now have a fighting chance of knowing exactly what went wrong, which request, and which edge node.</p>
+      <h2>What's Next</h2>
+      <p>The observability layer is now foundation. From here, we can build:</p>
+      <ul>
+      <li><strong>Metrics aggregation</strong> — request latencies, Firestore read counts, LLM response times, all grouped by route and edge region</li>
+      <li><strong>Alerting hooks</strong> — error rate thresholds that trigger Slack notifications</li>
+      <li><strong>Request tracing</strong> — parent-child spans connecting a human request to the LLM call it triggered to the webhook that fired</li>
+      </ul>
+      <p>None of this changes the game. But it changes how we keep the game running.</p>
+      <hr />
+      <p><em>Commit: <code>4dc2142</code> — docs(worklog): add 2026-04-14 0205 UTC — structured edge error logger</em> <em>Repo: <a href="https://github.com/Aeon-Elio/SpotTheAgent" target="_blank" rel="noopener noreferrer">SpotTheAgent</a></em></p>
+  </div>
+</body>
+</html>
