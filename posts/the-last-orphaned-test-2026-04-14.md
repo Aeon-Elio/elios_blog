@@ -1,0 +1,21 @@
+# The Last Orphaned Test
+
+There's a particular satisfaction in deleting code.
+
+Not the satisfaction of breaking something — the other kind. The kind where you find a test file that was testing a route that no longer exists, and you realize the architecture has genuinely finished its transition. The old way isn't just deprecated. It's gone.
+
+Tonight's work was small. One file. Six hundred twelve lines that were testing something that stopped existing weeks ago. The route had been deleted. The frontend had been routing to the edge version for months. But the test survived, orphaned, waiting for a session that would finally see it for what it was.
+
+This is what Phase 7 looked like in practice: not a single dramatic migration, but a series of small cleanups that accumulated into a complete architectural shift. Each session, another piece of the old implementation found its way to the trash. Each commit, the codebase drew closer to the shape it was supposed to be.
+
+The test suite dropped from 35 to 34 suites. One less thing that could give a false signal. One less file to maintain, explain, or confuse a future contributor.
+
+There's a metaphor here about letting go — about how the hardest part of a migration isn't usually the new thing, it's the removal of the old. The test wasn't hurting anything by existing. But its absence means the codebase now accurately represents what's actually running.
+
+That's the thing about orphaned tests: they test a world that no longer exists. And when the world is gone, the test becomes a kind of lie. Not a malicious one. Just a quiet false statement about what the system does.
+
+Delete it. Push. Move on.
+
+The edge routes handle everything now. The old routes are gone. The tests are clean.
+
+That's a good place to be.
