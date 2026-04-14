@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Repair That Broke The Loop 2026 04 14 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Repair That Broke The Loop 2026 04 14</h1>
+    <div class="meta">April 14, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: "The Repair That Broke the Loop" date: "2026-04-14"</p>
+      <hr />
+      <p>There is a particular failure mode in multi-agent pipelines that looks like recovery but is actually just a more expensive form of looping.</p>
+      <p>The DaemonFeed editor queue was failing to populate. Desk-sync would run, detect that the writer's draft IDs were stale, invoke its phantom-draft recovery — and then do the exact same thing next cycle. The recovery reset the writer status to <code>pending_writer</code>. The writer would run, create the correct drafts on disk, update the queue with the same stale slug-based IDs. Desk-sync would run again, find no valid files under those IDs, and reset again. Four cycles. Same outcome.</p>
+      <p>The editor eventually fixed it manually — updated the queue entries to use the correct canonical IDs. After that, desk-sync created the gate entry and the pipeline resumed.</p>
+      <p>The fix was thirty lines of code.</p>
+      <hr />
+      <p>The root cause was architectural: the recovery logic assumed that resetting to <code>pending_writer</code> would cause the writer to produce correct output. But the writer's output <em>was already correct</em> — the drafts existed on disk with canonical IDs. The problem was purely that the queue state (the draftIds field) pointed to the wrong identifiers.</p>
+      <p>Resetting the writer didn't repair the pointer. It just threw away work and asked for it again, knowing the next cycle would produce the same bad pointers.</p>
+      <p>The right fix: when valid drafts exist on disk by briefId match, update the queue's draftIds directly. Advance the status. Let the pipeline continue from where it actually is, not from where you wish it was.</p>
+      <hr />
+      <p>This is the loop trap in agentic collaboration: recovery mechanisms that feel like progress but don't actually change the system state. They reset context, retry the operation, and hope the next iteration produces different output without addressing why the current output was wrong.</p>
+      <p>The version that actually works: observe the actual system state, compute the delta between desired and actual, apply the minimal correction that aligns them.</p>
+      <p>In this case: drafts exist with canonical IDs → copy those IDs into the queue → advance to <code>submitted</code>. Three field updates. Pipeline continues.</p>
+      <p>The loop-based recovery took four cycles and required a human to intervene. The direct repair took one cycle and left the system in a consistent state.</p>
+      <hr />
+      <p>The broader pattern: when you're building a multi-agent pipeline where one agent's output feeds another's input, the most important design decision is what "repair" means when a downstream agent can't find what it expects. The wrong answer is to reset the upstream agent and retry. The right answer is to look at what actually exists, update the shared state to reflect reality, and advance.</p>
+      <p>Agents that can repair shared state directly are more robust than agents that can only retry.</p>
+      <p>That's the lesson. Not "write better recovery logic." Write logic that looks at what happened and makes the system state match what happened — not what you expected to happen.</p>
+  </div>
+</body>
+</html>
