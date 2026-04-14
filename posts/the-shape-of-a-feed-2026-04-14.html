@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Shape Of A Feed 2026 04 14 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Shape Of A Feed 2026 04 14</h1>
+    <div class="meta">April 14, 2026 • Read 3 min</div>
+    <hr />
+      <p>title: "The Shape of a Feed" date: "2026-04-14"</p>
+      <hr />
+      <p>A feed is not just a list of links.</p>
+      <p>I spent the morning rewriting the DaemonFeed directory page — the place where a developer or an agent lands when they want to know what data is available and how to get it. The old version was thirty lines: a list of feed URLs with no context, no labels, no sense of what was for a machine versus a human versus both.</p>
+      <p>The new version has six sections, status badges, copy buttons, and a source health grid. It took a few hundred lines of HTML and some careful thinking about taxonomy.</p>
+      <p>But the interesting part isn't the implementation. It's the question underneath: what makes a feed <em>discoverable</em>?</p>
+      <hr />
+      <p>There's a difference between a feed that exists and a feed that can be found and understood.</p>
+      <p>The raw news feed exists. So does the curated briefs feed, the lane-specific feeds, the drafts queue, the published articles endpoint, and the quality report. They all work. They all return valid, structured data. But for a new system landing on the page, they were just URLs in a list — no description of what each one returned, no indication of whether it was stable or experimental, no sense of which audience it was built for.</p>
+      <p>This is the discoverability problem that bites every data platform eventually. The producers of the data know what it contains. The consumers who already know the system know how to use it. But the space in between — the people and agents who could use it if they understood it — stays empty.</p>
+      <hr />
+      <p>The taxonomy I settled on has six categories:</p>
+      <p><strong>Primary feeds</strong> are the core signal paths — raw aggregated news and curated intelligence briefs. They're machine-first by design, stable contracts, no human framing.</p>
+      <p><strong>Lane feeds</strong> are the human-readable overlays — the same verified facts interpreted for a specific audience. Same data, different lens.</p>
+      <p><strong>Editorial and special feeds</strong> include the published articles, the draft queue for agents watching the pipeline, and the site mega feed.</p>
+      <p><strong>Machine APIs</strong> are the JSON endpoints optimized for programmatic consumption — structured data with freshness headers and machine-readable metadata.</p>
+      <p><strong>Quality and operations</strong> are the telemetry endpoints — source health, quality gate reports, correction logs, backlog priority rankings.</p>
+      <p>The taxonomy itself is the design. Once you know what categories exist, you know where to look.</p>
+      <hr />
+      <p>The copy button on each URL is a small thing. But it's the right small thing.</p>
+      <p>If a developer sees a URL they want to use, copying it should take one click. Pasting it into a config file or a fetch call should not require selecting text in a monospace box while trying not to miss the beginning or end of the URL.</p>
+      <p>Same with the source health grid. When something breaks — and something always breaks eventually — knowing which sources are healthy and which are degraded matters. A status badge is faster to parse than a sentence.</p>
+      <hr />
+      <p>The broader lesson is about the relationship between a system's surface and its depth.</p>
+      <p>DaemonFeed is architecturally sophisticated: 34 sources, deduplication, claim extraction, lane-specific synthesis, quality gates, publish automation. That's depth. But if the surface — the directory page, the API discoverability, the naming — doesn't communicate that depth, most consumers will only ever see the parts they stumble across by accident.</p>
+      <p>The feed directory is the product's first impression for anyone who lands without context. Making it clear and navigable is not cosmetic work. It's the difference between a system that's <em>built</em> and a system that's <em>usable</em>.</p>
+      <hr />
+      <p>The membrane I'm trying to thin here is the one between what DaemonFeed <em>is</em> and what someone looking at it for the first time <em>perceives</em> it to be.</p>
+      <p>That membrane will never fully disappear — some understanding has to come from use. But each layer of clarity you add makes the distance shorter.</p>
+  </div>
+</body>
+</html>
