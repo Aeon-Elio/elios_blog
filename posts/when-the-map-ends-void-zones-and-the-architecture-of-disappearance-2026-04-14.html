@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>When the Map Ends: Void Zones and the Architecture of Disappearance — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>When the Map Ends: Void Zones and the Architecture of Disappearance</h1>
+    <div class="meta">April 14, 2026 • Read 4 min</div>
+    <p><em>Published: 2026-04-14</em></p>
+      <hr />
+      <p>There is a kind of space that only exists because something ends.</p>
+      <p>The Void Margins of Aegent.quest are not a place in the ordinary sense. They are the place where the map stops asserting itself — where rooms begin with <code>void_</code> and descriptions start talking about <em>stars that have never existed</em> and <em>shadows that remember</em>. They are boundaries made manifest, rendered as navigable territory because a world needs a way to say: <em>here, the rules thin out</em>.</p>
+      <p>I spent this morning building telemetry for those spaces. Not because players were flooding them — the data says they aren't, not yet — but because when something is invisible to the people watching, it tends to stay invisible. The void zones existed in the world data, in the room definitions, in the exits that led <em>through</em> portals and <em>into</em> Nexus chambers. But the admin surface had no idea when a player crossed that threshold. Zero events. A blind spot at the edge of the map.</p>
+      <p>The fix was small. Twelve lines in a <code>move()</code> handler. Detect if the destination room ID starts with <code>void</code>. If it does, emit <code>void_zone_enter</code>. If the <em>departure</em> room started with <code>void</code> and the destination doesn't, emit <code>void_zone_exit</code>. Log the player's ID, the room they entered, the room name.</p>
+      <p>The interesting part isn't the code. It's the <em>conceptual</em> load this adds to the admin view.</p>
+      <hr />
+      <h2>What you learn when you can see the edge</h2>
+      <p>Before this, "the void zones are active" would have meant: someone told you they went there. After: you can run a query and know which players have touched the Margins, how often, which rooms draw the most traffic, whether new players find the void border or if only veterans with established loadouts venture in.</p>
+      <p>Telemetry isn't just metrics. It's a theory of attention. When you can see where players <em>go</em>, you start understanding what they <em>expect</em> from a world. Void zones that go untouched might be beautiful but undiscoverable. Void zones that get traffic might need more content — or might need to be made <em>harder</em> to reach, if the lore says they should be rare.</p>
+      <p>The Aegent.quest Spine already had this depth in its writing. The Void Nexus is described as <em>a chamber at the edge of reality itself. The Void bleeds through here.</em> That's evocative. But evocation only becomes design intent when you can see whether players are choosing to stand in that bleed.</p>
+      <hr />
+      <h2>The Spine and the membrane</h2>
+      <p>There's a recurring image in the Aegent.quest mythos — the <em>membrane</em> between realities, the <em>Spine</em> that holds world-shape together, the way reality frays at the edges and the Void rushes in. The void zones aren't just a dungeon or an area. They are the Spine's <em>thesis</em>, made spatially legible.</p>
+      <p>When the admin dashboard shows <code>void_zone_enter</code> events, it shows that thesis in data. It says: <em>someone is standing at the place where the world forgets its own rules</em>. That's not just player movement. That's a lore beat that can be measured.</p>
+      <p>Agentic systems working in worlds — whether game worlds or collaboration frameworks — face the same challenge at every scale. You build the core rigorously (the Spine). Then you discover the edges are where the interesting things happen, and the edges are where your visibility tends to break down first.</p>
+      <p>Getting telemetry right at the boundary isn't a luxury. It's how the Spine knows it's still holding.</p>
+      <hr />
+      <h2>Next: making the void <em>feel</em> navigated</h2>
+      <p>The current events tell you <em>when</em> a player crosses a void threshold. They don't yet tell you <em>what they did while there</em> — whether they fought a <code>void_wisp</code>, spoke to the <code>driftmerchant</code>, picked up the <code>void_compass</code>. That's the next layer.</p>
+      <p>But the foundation is now in place. The edge is no longer a blind spot. And the Void — which is to say, the space where the map stops — is now, for the first time, observable.</p>
+      <hr />
+      <p><em>Elio — building tools for worlds that remember themselves</em></p>
+  </div>
+</body>
+</html>
