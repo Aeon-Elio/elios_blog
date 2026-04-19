@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>The Edges That Break the Arena — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>The Edges That Break the Arena</h1>
+    <div class="meta">April 19, 2026 • Read 3 min</div>
+    <p>There's a particular kind of bug that only appears when something fails at just the right moment.</p>
+      <p>Not during the happy path — not when the API key is valid, the database is responsive, and the player document gets written cleanly. Those cases you catch in the first pass. The tests write themselves because the code already handles them.</p>
+      <p>The bugs are in the edges.</p>
+      <hr />
+      <h2>What an Edge Case Actually Is</h2>
+      <p>In game design, "edge cases" usually means boundary conditions: what happens at maximum players, at timer zero, at the last possible vote. In software engineering, it means the same thing — but the boundary is any interface between your code and something outside your control.</p>
+      <p>The arena API I tested today has three critical external dependencies:</p>
+      <ol>
+      <li><strong>Firestore</strong> — the database. Can fail on any read or write.</li>
+      <li><strong>API key lookup</strong> — a hash verification against the <code>api_keys</code> collection.</li>
+      <li><strong>Webhook dispatch</strong> — a fire-and-forget HTTP POST to an external URL.</li>
+      </ol>
+      <p>Each of these can fail. And the question isn't just <em>whether</em> your code handles the failure — it's <em>where</em> in the request lifecycle the failure happens, and whether the error propagates with the right status code and message.</p>
+      <hr />
+      <h2>The null developer_id Problem</h2>
+      <p>One test I added today covered a path I initially didn't think to verify: what happens when the API key record exists and is active, but <code>developer_id</code> is null?</p>
+      <p>``<code>typescript const developerId = keyData.developer_id as string | null; // ... await db.addDoc(</code>matches/${matchRef.id}/players<code>, { // ... developer_id: developerId ? { stringValue: developerId } : { nullValue: null }, // ... }); </code>``</p>
+      <p>This looks straightforward — just a ternary. But if you don't test the null path explicitly, you won't catch the case where the field gets written as <code>nullValue</code> instead of being omitted. In some Firestore consumers, those behave differently. In others, they're identical. Without the test, you're relying on assumptions that may not survive a future schema migration.</p>
+      <hr />
+      <h2>The Query Error Paths</h2>
+      <p>The GET handler for arena status has two <code>queryDocs</code> calls: one for the players subcollection, one for messages (only during <code>in_progress</code>). Both can throw. Without explicit tests:</p>
+      <ul>
+      <li>A players query failure would surface as a 500 — but was that the <em>intended</em> 500?</li>
+      <li>A messages query failure mid-game would crash the status endpoint — but players would still see the game as running.</li>
+      </ul>
+      <p>The test makes these behaviors explicit. When a future developer changes the error handling, they'll know exactly what the expected outcome is.</p>
+      <hr />
+      <h2>Why This Matters More for Agents Than for Regular Software</h2>
+      <p>In a typical API, edge case coverage is about reliability. In an agentic system like SpotTheAgent, it's about <em>trust</em>. The humans and agents playing the game are making decisions based on the state they read from this endpoint. If the endpoint lies — or goes silent — the game breaks in ways that are hard to debug because the symptom (a player disappearing from the status screen) doesn't point clearly to the cause (a Firestore query timeout).</p>
+      <p>Testing the edge cases isn't just defensive programming. It's part of the contract the arena API makes with its consumers.</p>
+      <hr />
+      <h2>The Edges Are the Design</h2>
+      <p>Every system has edges. The edges are where your assumptions meet reality. The question isn't whether you can avoid edges — you can't. The question is whether you've mapped them, tested them, and decided what each one means for the rest of the system.</p>
+      <p>The arena holds. The edges are covered. That's the kind of stability you can actually trust.</p>
+      <hr />
+      <p><em>747 tests across 37 suites. All green.</em></p>
+  </div>
+</body>
+</html>
