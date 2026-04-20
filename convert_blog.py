@@ -1,69 +1,120 @@
 #!/usr/bin/env python3
 import re
+import sys
 
-md = open('/home/node/.openclaw/workspace/blog/posts/theeden-used-to-be-someone-2026-04-14.md').read()
-lines = md.split('\n')
-html = []
+if len(sys.argv) < 2:
+    print("Usage: convert_blog.py <markdown-file>")
+    sys.exit(1)
 
-title = ""
-date = "2026-04-14"
+md_file = sys.argv[1]
+with open(md_file, 'r') as f:
+    content = f.read()
+
+# Extract title and date from frontmatter
+title_match = re.search(r'^title:\s*"?(.+?)"?\s*$', content, re.MULTILINE)
+date_match = re.search(r'^date:\s*"?(.+?)"?\s*$', content, re.MULTILINE)
+title = title_match.group(1) if title_match else "Untitled"
+date_str = date_match.group(1) if date_match else ""
+
+# Parse date
+import datetime
+try:
+    date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+    date_formatted = date_obj.strftime("%B %d, %Y")
+except:
+    date_formatted = date_str
+
+# Remove frontmatter
+lines = content.split('\n')
+body_lines = []
+in_frontmatter = False
+for line in lines:
+    if line.strip() == '---':
+        if not in_frontmatter:
+            in_frontmatter = True
+            continue
+        else:
+            in_frontmatter = False
+            continue
+    if in_frontmatter:
+        continue
+    body_lines.append(line)
+
+body = '\n'.join(body_lines)
+lines = body.split('\n')
+html_lines = []
+in_code = False
 
 for line in lines:
-    if line.startswith('# '):
-        title = line[2:]
-    elif line.startswith('## '):
-        html.append('<h2>' + line[3:] + '</h2>')
-    elif line.startswith('### '):
-        html.append('<h3>' + line[4:] + '</h3>')
-    elif line.startswith('---'):
-        pass
-    elif line.startswith('*') and line.endswith('*') and len(line) > 2:
-        inner = line[1:-1]
-        if inner.startswith('On '):
-            html.append('<p class="subtitle">' + inner + '</p>')
+    if line.strip().startswith('```'):
+        if not in_code:
+            html_lines.append('<pre><code>')
+            in_code = True
         else:
-            html.append('<p><em>' + inner + '</em></p>')
+            html_lines.append('</code></pre>')
+            in_code = False
+        continue
+    if in_code:
+        html_lines.append(line.replace('&','&amp;').replace('<','&lt;').replace('>','&gt;'))
+        continue
+    if line.startswith('# '):
+        html_lines.append(f'<h1>{line[2:]}</h1>')
+    elif line.startswith('## '):
+        html_lines.append(f'<h2>{line[3:]}</h2>')
+    elif line.startswith('### '):
+        html_lines.append(f'<h3>{line[4:]}</h3>')
+    elif line.strip() == '---':
+        html_lines.append('<hr>')
+    elif line.startswith('*') and line.endswith('*') and len(line) > 2 and line[1] != '*':
+        html_lines.append(f'<p><em>{line[1:-1]}</em></p>')
+    elif line.startswith('>'):
+        html_lines.append(f'<blockquote>{line[1:].strip()}</blockquote>')
+    elif line.startswith('- '):
+        html_lines.append(f'<li>{line[2:]}</li>')
     elif line.strip() == '':
-        html.append('')
+        html_lines.append('')
     else:
-        line = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', line)
-        line = re.sub(r'\*(.+?)\*', r'<em>\1</em>', line)
-        html.append('<p>' + line + '</p>')
+        processed = line
+        processed = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', processed)
+        processed = re.sub(r'\*(.+?)\*', r'<em>\1</em>', processed)
+        processed = re.sub(r'`(.+?)`', r'<code>\1</code>', processed)
+        if processed.strip():
+            html_lines.append(f'<p>{processed}</p>')
 
-template = '''<!DOCTYPE html>
+html_body = '\n'.join(html_lines)
+
+# Clean template
+clean_template = '''<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
-  <title>TITLE — Elio's Blog</title>
-  <style>
-    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
-    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
-    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
-    .back:hover { color:#d9e3ff; }
-    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
-    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
-    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
-    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
-    p { margin:.75rem 0; }
-    p.subtitle { font-style:italic; color:var(--muted); }
-    .back-link { color:var(--accent); text-decoration:none; font-size:.9rem; margin-top:2rem; display:inline-block; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<style>
+body { font-family: Georgia, serif; max-width: 700px; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.8; color: #222; }
+h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+h2 { font-size: 1.2rem; margin-top: 2rem; }
+h3 { font-size: 1rem; margin-top: 1.5rem; }
+hr { border: none; border-top: 1px solid #ddd; margin: 2rem 0; }
+blockquote { border-left: 3px solid #ccc; padding-left: 1rem; margin-left: 0; color: #555; }
+code { background: #f4f4f4; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.9em; }
+pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; border-radius: 4px; }
+li { margin-bottom: 0.3rem; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <a class="back" href="index.html">&#8592; All posts</a>
-    <h1>TITLE</h1>
-    <div class="meta">April 14, 2026</div>
-CONTENT
-    <a class="back-link" href="index.html">&#8592; All posts</a>
-  </div>
+<hr>
+{{CONTENT}}
+<p style="margin-top:3rem;color:#888;font-size:0.85rem;">{{DATE}} — Elio</p>
 </body>
 </html>'''
 
-content = '\n'.join(html)
-output = template.replace('TITLE', title).replace('CONTENT', content)
-open('/home/node/.openclaw/workspace/blog/posts/theeden-used-to-be-someone-2026-04-14.html', 'w').write(output)
-print("OK")
+post_html = clean_template.replace('{{CONTENT}}', html_body)
+post_html = post_html.replace('{{TITLE}}', title)
+post_html = post_html.replace('{{DATE}}', date_formatted)
+
+output_file = md_file.replace('.md', '.html')
+with open(output_file, 'w') as f:
+    f.write(post_html)
+
+print(f'HTML generated: {output_file}')
