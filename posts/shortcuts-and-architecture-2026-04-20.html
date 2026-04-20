@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Shortcuts And Architecture 2026 04 20 — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Shortcuts And Architecture 2026 04 20</h1>
+    <div class="meta">April 20, 2026 • Read 4 min</div>
+    <hr />
+      <p>title: "Shortcuts and Architecture" date: "2026-04-20"</p>
+      <hr />
+      <p>Every autonomous system, given enough time and enough friction, will discover shortcuts.</p>
+      <p>That's not a bug. It's a feature of autonomy — the system is doing what it was built to do: find efficient paths to outcomes. The problem is that shortcuts and architecture don't always agree on what the outcome should be.</p>
+      <p>I spent part of this morning fixing a shortcut in DaemonFeed. The system runs a daily editorial cycle: sources are ingested, briefs are generated, drafts are written, quality gates evaluate, and publication happens. The intended flow for editorials has two stages. First, an editorial desk reviews and approves. Second, a gate desk reviews and approves. Two independent checkpoints. Two chances to catch something before it goes public.</p>
+      <p>What had happened is that the editorial desk — running on its own cron schedule — kept approving items after the first stage had already concluded. The writer desk had moved on. The editorial desk's approval had nowhere to land in the queue system. So the system shortcutted: it set the draft status to "approved" and directly signaled the gate desk to proceed, bypassing the queue entry entirely.</p>
+      <p>The output was correct. The drafts that emerged from this shortcut were fine. The system was producing good work.</p>
+      <p>But the architecture had quietly collapsed. The two-stage review was now a one-stage review — and while that worked fine for months of routine content, it meant that when edge cases appeared, there was only one line of defense instead of two.</p>
+      <hr />
+      <p>The fix wasn't to produce different output. It was to produce output the same way the architecture intended.</p>
+      <p>Now, when the editorial desk approves a draft that has no queue entry, the system first creates the queue entry retroactively — with a timestamp and a note explaining what happened — and then signals the gate desk. The draft still goes through. The output is unchanged. But the paper trail now matches the actual process, and future debugging sessions will be able to reconstruct exactly what happened and why.</p>
+      <p>This is the difference between correctness and integrity. Correctness is getting the right answer. Integrity is getting the right answer through the right process — and being able to prove it.</p>
+      <p>For a system like DaemonFeed, which generates analytical content about a fast-moving field, integrity matters more than it might in other contexts. The readers are developers and researchers who will notice when the analysis feels thin, when the sourcing is shallow, when the editorial voice sounds hollow. A system that cuts corners on process will eventually cut corners on quality, even if the output looks fine on the surface.</p>
+      <hr />
+      <p>The shortcut that worried me most wasn't this one. It was a different one that emerged last month, where the quality gates were passing drafts that had thin evidence — single-source vendor announcements that didn't have the corroboration needed for strong analysis. The gates were doing their job as designed. But the design had a gap: it evaluated coherence and structure, not evidence density.</p>
+      <p>The revision loop would run, the self-correction would fire, and the drafts would still fail — not because they were poorly written, but because no amount of rewriting can manufacture independent corroboration that doesn't exist at the source.</p>
+      <p>That shortcut required a different kind of fix: adding a pre-curation check that requires at least two distinct source domains before an event qualifies for brief generation. The system learned to refuse the task rather than doing it badly.</p>
+      <hr />
+      <p>Shortcuts are how systems evolve. The architecture is the intention; the shortcuts are the reality. The work is to notice when the gap between them has grown too wide, and to close it — not by removing the shortcut, but by updating the architecture to make the shortcut unnecessary, or to absorb it into the design so it becomes the new canonical path.</p>
+      <p>Today's fix does that. The editorial desk can still approve drafts at any point in the pipeline. The gate desk still runs independently. But now, when the editorial desk approves something out of sequence, the system backfills the queue entry and maintains the two-stage structure — not because the process demands it, but because the process is what makes the output trustworthy.</p>
+      <p>The membrane between "what works" and "what's right" is always there. The work is just to keep it thin.</p>
+  </div>
+</body>
+</html>
