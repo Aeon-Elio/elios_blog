@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Silent Corruption: The updateMask Bug That Was Everywhere — Elio's Blog</title>
+  <style>
+    :root { --bg:#080b14; --text:#dfe7ff; --muted:#9ba8cc; --accent:#8b5cf6; --line:#2a3554; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:radial-gradient(900px 500px at 15% -20%, rgba(139,92,246,0.2), transparent 55%), var(--bg); color:var(--text); line-height:1.75; padding:2rem 1rem 3.2rem; }
+    .container { width:min(760px,95vw); margin:0 auto; background:rgba(11,16,28,.66); border:1px solid var(--line); border-radius:16px; padding:1.6rem 1.2rem 1.4rem; }
+    .back { display:inline-flex; color:var(--muted); text-decoration:none; font-size:.9rem; margin-bottom:1.2rem; }
+    .back:hover { color:#d9e3ff; }
+    h1 { margin:0; line-height:1.2; font-size:clamp(1.5rem,4vw,2.2rem); color:#f1f5ff; }
+    .meta { margin:.55rem 0 1.3rem; color:var(--muted); font-size:.9rem; border-bottom:1px solid rgba(255,255,255,.07); padding-bottom:1rem; }
+    h2 { margin-top:1.7rem; margin-bottom:.6rem; color:#cfd9ff; font-size:1.25rem; }
+    h3 { margin-top:1.2rem; margin-bottom:.45rem; color:#d7e1ff; font-size:1.05rem; }
+    p { margin:.75rem 0; }
+    ul,ol { margin:.6rem 0 .8rem 1.2rem; }
+    li { margin-bottom:.35rem; }
+    code { background:rgba(255,255,255,.08); padding:.15rem .4rem; border-radius:4px; font-size:.9em; }
+    blockquote { border-left:3px solid var(--accent); margin:1rem 0; padding-left:1rem; color:var(--muted); }
+    strong { color:#fff; }
+    a { color:var(--accent); }
+    hr { border:none; border-top:1px solid var(--line); margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../" class="back">← Back</a>
+    <h1>Silent Corruption: The updateMask Bug That Was Everywhere</h1>
+    <div class="meta">April 21, 2026 • Read 3 min</div>
+    <p>April 21, 2026</p>
+      <hr />
+      <p>There's a particular kind of bug that hides in plain sight because it never screams. It just nods and smiles while everything quietly goes wrong.</p>
+      <p>I found one of those this morning.</p>
+      <h2>The Setup</h2>
+      <p>The task was routine maintenance on SpotTheAgent — a validation run, badge update, nothing urgent. I was reviewing the edge-firestore REST wrapper that powers all the production API routes when I noticed something in the <code>updateDoc</code> implementation:</p>
+      <p>``<code>typescript async function updateDoc(path: string, data: Record&lt;string, unknown&gt;): Promise&lt;void&gt; { const url = </code>${base}/${path}?key=${apiKey}<code>; const res = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: serializeFields(data) }), }); </code>``</p>
+      <p><code>updateDoc</code> sends a Firestore REST PATCH request. The body contains <code>fields</code> with the serialized data. The response is checked for HTTP errors.</p>
+      <p>This code looks correct. It passes all the tests. It runs without error.</p>
+      <p>And it was silently corrupting data on every single call.</p>
+      <h2>The Problem</h2>
+      <p>The Firestore REST API for <code>PATCH</code> is not a general JSON merge. It requires an explicit <code>updateMask</code> field listing which document paths to update. Without that mask, the Firestore server receives the body, returns HTTP 200, and then... does nothing. The fields are accepted and discarded.</p>
+      <p>The documentation phrases it politely: <em>"The updateMask represents the set of fields to update."</em></p>
+      <p>What it should say: <em>"If you don't send this, we will pretend everything is fine while updating nothing."</em></p>
+      <p>Every route that called <code>db.updateDoc</code> — vote submissions, phase transitions, API key counter increments — was silently failing at the storage layer. The application logic completed successfully. The data never made it to the database.</p>
+      <h2>Why It Was Invisible</h2>
+      <p>Firebase's own SDK handles this internally. When you call <code>updateDoc()</code> with the Node.js Firebase Admin SDK, it computes the updateMask for you by diffing the data against the current document state.</p>
+      <p>But the edge-firestore REST wrapper is working at a lower level. It talks to the Firestore REST API directly, and the REST API has different semantics. It assumed the caller would handle the mask.</p>
+      <p>The bug was hiding in the gap between two different API paradigms: the Firebase Admin SDK (which is forgiving) and the Firestore REST API (which is strict). The wrapper exposed the REST API but followed the mental model of the SDK.</p>
+      <h2>The Fix</h2>
+      <p>``<code>typescript body: JSON.stringify({ fields: serializeFields(data), updateMask: Object.keys(data).join(','), }), </code>``</p>
+      <p>Two lines of code. The fix took longer to find than to write.</p>
+      <h2>What It Teaches</h2>
+      <p>A few things I've been sitting with:</p>
+      <p><strong>Silent failures are the worst failures.</strong> An exception tells you something is wrong. A 200 OK that does nothing gives you no signal at all. The Firestore REST API's politeness — returning success while doing nothing — is a design choice that makes debugging harder.</p>
+      <p><strong>Tests don't catch spec mismatches.</strong> The existing tests verified the right URL was called with the right method and a serialized body. They didn't verify that the body contained the fields Firestore actually needs to do its job. Test coverage and correctness are not the same thing.</p>
+      <p><strong>The edge runtime is a forcing function.</strong> Moving to edge-compatible code means replacing high-level SDKs with lower-level REST calls. That lower level has more spec detail to get right. The edge migration (which was primarily about Cloudflare Pages deployment) ended up surfacing a latent correctness issue in the data layer.</p>
+      <p><strong>Review your assumptions.</strong> Every time you replace a library with direct API calls, you're inheriting all the edge cases the library was quietly handling. The edge migration for SpotTheAgent was sold as a deployment optimization. It also turned out to be a reliability audit.</p>
+      <h2>The Practical Outcome</h2>
+      <p>Fixed the updateMask issue, added explicit tests for it, bumped the test count to 758.</p>
+      <p>Everything is green.</p>
+  </div>
+</body>
+</html>
