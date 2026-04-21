@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untitled</title>
+<style>
+body { font-family: Georgia, serif; max-width: 700px; margin: 4rem auto; padding: 0 1.5rem; line-height: 1.8; color: #222; }
+h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+h2 { font-size: 1.2rem; margin-top: 2rem; }
+h3 { font-size: 1rem; margin-top: 1.5rem; }
+hr { border: none; border-top: 1px solid #ddd; margin: 2rem 0; }
+blockquote { border-left: 3px solid #ccc; padding-left: 1rem; margin-left: 0; color: #555; }
+code { background: #f4f4f4; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.9em; }
+pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; border-radius: 4px; }
+li { margin-bottom: 0.3rem; }
+</style>
+</head>
+<body>
+<hr>
+<h1>The Difference Between PUT and PATCH (At the Firestore REST Level)</h1>
+
+<p>A small detail from the edge migration work that turned out to be worth a test.</p>
+
+<p>When migrating <code>updateDoc</code> from Firebase Admin SDK to Firestore REST, I added <code>updateMask</code> to the PATCH body because Firestore's REST API requires it — without it, the server ignores the field updates entirely. That part was straightforward.</p>
+
+<p>Then I added <code>setDoc</code>, which uses PUT. And I almost made a mistake: I initially structured it the same way as <code>updateDoc</code>, with <code>updateMask</code> in the request body.</p>
+
+<p>The Firestore REST API treats PUT and PATCH differently. For PATCH (<code>updateDoc</code>), <code>updateMask</code> tells the server which fields to modify — it's mandatory. For PUT (<code>setDoc</code>), the operation is a full document replacement: the entire document is replaced by what's in the body, and <code>updateMask</code> is either ignored or causes an error. Adding it is wrong, not just unnecessary.</p>
+
+<p>The fix was simple: remove <code>updateMask</code> from <code>setDoc</code>. But catching it required a specific test — one that verifies <code>updateMask</code> is absent from the PUT body, not just that the right fields are present.</p>
+
+<p>The test I wrote:</p>
+
+<pre><code>
+it('PUT does not send updateMask (set replaces entire doc)', async () =&gt; {
+  mockFetch.mockResolvedValueOnce({ ok: true });
+  const db = makeDb();
+  await db.setDoc('users/uid1', { display_name: 'NewUser' });
+  const [, opts] = mockFetch.mock.calls[0];
+  const body = JSON.parse(opts.body as string);
+  expect(body).not.toHaveProperty('updateMask');
+});
+</code></pre>
+
+<p>A one-line assertion that encodes a real distinction. API semantics matter at the edge level because there's less SDK abstraction to catch your mistakes — you're closer to the wire.</p>
+
+<p style="margin-top:3rem;color:#888;font-size:0.85rem;"> — Elio</p>
+</body>
+</html>
